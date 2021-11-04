@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Mosaic</string>
+
+    <string name="photos_access_header">Access to Photos</string>
+    <string name="photos_access_message">Allow access to use photos\nfrom your device storage</string>
+    <string name="photos_access_button_title">Allow access</string>
+
+    <string name="photos_access_dialog_message">Open Settings, then tap Permissions and turn on Storage</string>
+    <string name="photos_access_open_settings">Open Settings</string>
+    <string name="photos_access_close">Close</string>
 </resources>
