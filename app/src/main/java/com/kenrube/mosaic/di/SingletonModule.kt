@@ -1,0 +1,16 @@
+package com.kenrube.mosaic.di
+
+import com.kenrube.mosaic.utils.CoroutineDispatchersProvider
+import com.kenrube.mosaic.utils.DispatchersProvider
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface SingletonModule {
+
+    @Binds
+    fun bindDispatchersProvider(dispatchersProvider: CoroutineDispatchersProvider): DispatchersProvider
+}
