@@ -9,7 +9,7 @@ import com.kenrube.mosaic.databinding.RecyclerViewPhotoItemBinding
 import com.kenrube.mosaic.presentation.model.UiPhoto
 import com.kenrube.mosaic.utils.setImage
 
-class PhotoListAdapter : ListAdapter<UiPhoto, PhotoListAdapter.ViewHolder>(diffCallback) {
+class PhotoListAdapter(private val onClick: (UiPhoto) -> Unit) : ListAdapter<UiPhoto, PhotoListAdapter.ViewHolder>(diffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = RecyclerViewPhotoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
@@ -31,6 +31,7 @@ class PhotoListAdapter : ListAdapter<UiPhoto, PhotoListAdapter.ViewHolder>(diffC
     inner class ViewHolder(private val binding: RecyclerViewPhotoItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: UiPhoto) {
             binding.photo.setImage(item.uri)
+            binding.photo.setOnClickListener { onClick.invoke(item) }
         }
     }
 }

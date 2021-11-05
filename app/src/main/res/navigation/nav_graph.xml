@@ -7,5 +7,18 @@
     <fragment
         android:id="@+id/photoListFragment"
         android:name="com.kenrube.mosaic.presentation.features.photo_list.PhotoListFragment"
-        tools:layout="@layout/fragment_photo_list" />
+        tools:layout="@layout/fragment_photo_list">
+        <action
+            android:id="@+id/openPhotoAction"
+            app:destination="@id/photoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/photoFragment"
+        android:name="com.kenrube.mosaic.presentation.features.photo.PhotoFragment"
+        tools:layout="@layout/fragment_photo" >
+        <argument
+            android:name="photoUri"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
 </navigation>

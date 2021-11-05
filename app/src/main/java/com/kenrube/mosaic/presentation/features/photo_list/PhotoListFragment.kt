@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kenrube.mosaic.databinding.FragmentPhotoListBinding
@@ -53,7 +54,7 @@ class PhotoListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPhotoListBinding.inflate(inflater, container, false)
+        _binding = FragmentPhotoListBinding.inflate(inflater)
         return binding.root
     }
 
@@ -87,7 +88,10 @@ class PhotoListFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
-            adapter = PhotoListAdapter()
+            adapter = PhotoListAdapter {
+                val action = PhotoListFragmentDirections.openPhotoAction(it.uri ?: "")
+                findNavController().navigate(action)
+            }
             layoutManager = GridLayoutManager(requireContext(), 3)
             setHasFixedSize(true)
             addItemDecoration(object : RecyclerView.ItemDecoration() {
