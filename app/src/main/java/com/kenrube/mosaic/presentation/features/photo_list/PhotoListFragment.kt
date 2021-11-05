@@ -54,7 +54,7 @@ class PhotoListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPhotoListBinding.inflate(inflater)
+        _binding = FragmentPhotoListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -88,13 +88,27 @@ class PhotoListFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
+            val columnCount = 3
+
             adapter = PhotoListAdapter {
                 val action = PhotoListFragmentDirections.openPhotoAction(it.uri ?: "")
                 findNavController().navigate(action)
             }
-            layoutManager = GridLayoutManager(requireContext(), 3)
+            layoutManager = GridLayoutManager(requireContext(), columnCount)
             setHasFixedSize(true)
             addItemDecoration(object : RecyclerView.ItemDecoration() {
+                private fun getOffsets(position: Int, itemCount: Int): Rect {
+                    val defaultMargin = context.dpToPx(2)
+
+                    val left = if (position % columnCount == 0) 0 else defaultMargin
+                    val top = if (position < columnCount) 0 else defaultMargin
+                    val right = if ((position + 1) % columnCount == 0) 0 else defaultMargin
+                    val bottom = if (position >= (itemCount / columnCount * columnCount)) 0 else
+                        defaultMargin
+
+                    return Rect(left, top, right, bottom)
+                }
+
                 override fun getItemOffsets(
                     outRect: Rect,
                     view: View,
@@ -102,10 +116,7 @@ class PhotoListFragment : Fragment() {
                     state: RecyclerView.State
                 ) {
                     val position = getChildAdapterPosition(view)
-                    val defaultMargin = context.dpToPx(4)
-                    val left = if (position % 3 == 0) 0 else defaultMargin
-                    val right = if ((position + 1) % 3 == 0) 0 else defaultMargin
-                    outRect.set(left, defaultMargin, right, defaultMargin)
+                    outRect.set(getOffsets(position, state.itemCount))
                 }
             })
         }

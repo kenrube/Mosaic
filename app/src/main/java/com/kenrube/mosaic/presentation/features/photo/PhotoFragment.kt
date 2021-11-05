@@ -24,7 +24,7 @@ class PhotoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPhotoBinding.inflate(inflater)
+        _binding = FragmentPhotoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
