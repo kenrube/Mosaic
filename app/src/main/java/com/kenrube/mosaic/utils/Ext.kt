@@ -5,11 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.widget.ImageView
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 fun ImageView.setImage(uri: String?) {
-    Glide.with(context)
+    GlideApp.with(context)
         .load(uri)
         .centerCrop()
         .transition(DrawableTransitionOptions.withCrossFade())

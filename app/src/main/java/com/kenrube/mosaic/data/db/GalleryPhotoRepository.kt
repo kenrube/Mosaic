@@ -2,6 +2,7 @@ package com.kenrube.mosaic.data.db
 
 import android.content.Context
 import android.provider.MediaStore
+import com.kenrube.mosaic.data.supportedMimeTypes
 import com.kenrube.mosaic.domain.model.Photo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -13,18 +14,21 @@ class GalleryPhotoRepository @Inject constructor(
     override suspend fun getPhotos(): List<Photo> {
         val images = ArrayList<Photo>()
 
-        val cursor = context.contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            arrayOf(MediaStore.MediaColumns.DATA),
-            "${MediaStore.MediaColumns.MIME_TYPE} REGEXP 'image/(jpeg|png|gif)'",
-            null,
-            "${MediaStore.MediaColumns.DATE_MODIFIED} DESC"
-        )
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(MediaStore.MediaColumns.DATA)
+        val selection = """${MediaStore.MediaColumns.MIME_TYPE} IN 
+            (${supportedMimeTypes.joinToString { "'$it'" }}) 
+            AND ${MediaStore.MediaColumns.SIZE} > 0"""
+            .trimMargin()
+        val selectionArgs: Array<String>? = null
+        val sortOrder = "${MediaStore.MediaColumns._ID} DESC"
+
+        val cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
         cursor?.use {
             val dataColumnIndex = it.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
             while (it.moveToNext()) {
-                val uri = it.getString(dataColumnIndex)
-                images.add(Photo(uri))
+                val imageUri = it.getString(dataColumnIndex)
+                images.add(Photo(imageUri))
             }
         }
 
