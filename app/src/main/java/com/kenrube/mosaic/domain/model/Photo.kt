@@ -1,5 +1,8 @@
 package com.kenrube.mosaic.domain.model
 
+import android.net.Uri
+
 data class Photo(
-    val uri: String
+    val id: Int,
+    val uri: Uri
 )

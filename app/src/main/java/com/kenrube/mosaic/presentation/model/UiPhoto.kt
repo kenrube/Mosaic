@@ -1,5 +1,8 @@
 package com.kenrube.mosaic.presentation.model
 
+import android.net.Uri
+
 data class UiPhoto(
-    val uri: String?
+    val id: Int,
+    val uri: Uri
 )

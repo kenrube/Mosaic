@@ -1,12 +1,15 @@
 package com.kenrube.mosaic.presentation.features.photo_list
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
@@ -17,9 +20,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kenrube.mosaic.R
+import com.kenrube.mosaic.data.supportedMimeTypes
 import com.kenrube.mosaic.databinding.FragmentPhotoListBinding
 import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment.Companion.BUNDLE_KEY
 import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment.Companion.REQUEST_KEY
+import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoListAdapter
+import com.kenrube.mosaic.presentation.features.photo_list.adapter.UiModel
 import com.kenrube.mosaic.presentation.permissions.PermissionStatus
 import com.kenrube.mosaic.utils.dpToPx
 import com.kenrube.mosaic.utils.openAppSystemSettings
@@ -47,6 +54,12 @@ class PhotoListFragment : Fragment() {
     private val requestStoragePermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             resolveStoragePermissionStatus(isGranted)
+        }
+
+    private val openStoragePhotoPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val uri = result.data?.data
+            uri?.let { navigateToPhoto(it) }
         }
 
     override fun onCreateView(
@@ -90,9 +103,17 @@ class PhotoListFragment : Fragment() {
         binding.recyclerView.apply {
             val columnCount = 3
 
-            adapter = PhotoListAdapter {
-                val action = PhotoListFragmentDirections.openPhotoAction(it.uri ?: "")
-                findNavController().navigate(action)
+            adapter = PhotoListAdapter { item ->
+                when (item) {
+                    is UiModel.PhotoUiModel -> {
+                        navigateToPhoto(item.uri)
+                    }
+                    is UiModel.ActionUiModel -> {
+                        if (item.action == Intent.ACTION_OPEN_DOCUMENT) {
+                            openStoragePhotoPicker()
+                        }
+                    }
+                }
             }
             layoutManager = GridLayoutManager(requireContext(), columnCount)
             setHasFixedSize(true)
@@ -129,7 +150,18 @@ class PhotoListFragment : Fragment() {
                 binding.photosAccessWarning.isVisible = it.showingPermissionWarning
                 binding.recyclerView.apply {
                     isVisible = it.photos.isNotEmpty()
-                    (adapter as PhotoListAdapter).submitList(it.photos)
+
+                    val list = arrayListOf<UiModel>()
+                    list.add(UiModel.ActionUiModel(
+                        -1,
+                        R.drawable.ic_baseline_collections_24,
+                        R.string.photos_open_photos_action,
+                        Intent.ACTION_OPEN_DOCUMENT
+                    ))
+                    list.addAll(it.photos.map {
+                            photo -> UiModel.PhotoUiModel(photo.id, photo.uri)
+                    })
+                    (adapter as PhotoListAdapter).submitList(list)
                 }
 
                 // workaround to hide dialog (if it's still shown) when we granted
@@ -151,5 +183,19 @@ class PhotoListFragment : Fragment() {
 
     private fun showPhotoAccessRationaleDialog() {
         storagePermissionDialog.show(childFragmentManager, StoragePermissionDialogFragment.TAG)
+    }
+
+    private fun openStoragePhotoPicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+            putExtra(Intent.EXTRA_MIME_TYPES, supportedMimeTypes)
+        }
+        openStoragePhotoPickerLauncher.launch(intent)
+    }
+
+    private fun navigateToPhoto(uri: Uri) {
+        val action = PhotoListFragmentDirections.openPhotoAction(uri)
+        findNavController().navigate(action)
     }
 }

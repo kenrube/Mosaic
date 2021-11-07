@@ -8,4 +8,6 @@
     <string name="photos_access_dialog_message">Open Settings, then tap Permissions and turn on Storage</string>
     <string name="photos_access_open_settings">Open Settings</string>
     <string name="photos_access_close">Close</string>
+
+    <string name="photos_open_photos_action">Open photos</string>
 </resources>
