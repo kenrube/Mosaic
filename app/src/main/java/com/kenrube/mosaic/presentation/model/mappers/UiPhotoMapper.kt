@@ -7,6 +7,7 @@ import javax.inject.Inject
 class UiPhotoMapper @Inject constructor() : UiMapper<Photo, UiPhoto> {
     override fun mapToView(input: Photo) =
         UiPhoto(
-            uri = input.uri.ifEmpty { null }
+            id = input.id,
+            uri = input.uri
         )
 }

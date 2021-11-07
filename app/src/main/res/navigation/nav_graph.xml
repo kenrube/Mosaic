@@ -18,7 +18,7 @@
         tools:layout="@layout/fragment_photo" >
         <argument
             android:name="photoUri"
-            app:argType="string"
+            app:argType="android.net.Uri"
             app:nullable="false" />
     </fragment>
 </navigation>

@@ -1,6 +1,8 @@
 package com.kenrube.mosaic.data.db
 
+import android.content.ContentResolver
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import com.kenrube.mosaic.data.supportedMimeTypes
 import com.kenrube.mosaic.domain.model.Photo
@@ -15,7 +17,7 @@ class GalleryPhotoRepository @Inject constructor(
         val images = ArrayList<Photo>()
 
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val projection = arrayOf(MediaStore.MediaColumns.DATA)
+        val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA)
         val selection = """${MediaStore.MediaColumns.MIME_TYPE} IN 
             (${supportedMimeTypes.joinToString { "'$it'" }}) 
             AND ${MediaStore.MediaColumns.SIZE} > 0"""
@@ -25,10 +27,13 @@ class GalleryPhotoRepository @Inject constructor(
 
         val cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)
         cursor?.use {
+            val idColumnIndex = it.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val dataColumnIndex = it.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
             while (it.moveToNext()) {
-                val imageUri = it.getString(dataColumnIndex)
-                images.add(Photo(imageUri))
+                val id = it.getInt(idColumnIndex)
+                val imagePath = it.getString(dataColumnIndex)
+                val imageUri = Uri.Builder().scheme(ContentResolver.SCHEME_FILE).path(imagePath).build()
+                images.add(Photo(id, imageUri))
             }
         }
 
