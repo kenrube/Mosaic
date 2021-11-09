@@ -3,7 +3,6 @@ package com.kenrube.mosaic.presentation.features.photo_list
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,8 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.data.supportedMimeTypes
 import com.kenrube.mosaic.databinding.FragmentPhotoListBinding
@@ -28,10 +25,11 @@ import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDial
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoListAdapter
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.UiModel
 import com.kenrube.mosaic.presentation.permissions.PermissionStatus
-import com.kenrube.mosaic.utils.dpToPx
 import com.kenrube.mosaic.utils.openAppSystemSettings
+import com.kenrube.mosaic.utils.widgets.BoundlessItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PhotoListFragment : Fragment() {
@@ -61,6 +59,9 @@ class PhotoListFragment : Fragment() {
             val uri = result.data?.data
             uri?.let { navigateToPhoto(it) }
         }
+
+    @Inject
+    lateinit var decoration: BoundlessItemDecoration
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,8 +102,8 @@ class PhotoListFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.photoList.apply {
-            val columnCount = 3
-
+            setHasFixedSize(true)
+            addItemDecoration(decoration)
             adapter = PhotoListAdapter { item ->
                 when (item) {
                     is UiModel.PhotoUiModel -> {
@@ -115,31 +116,6 @@ class PhotoListFragment : Fragment() {
                     }
                 }
             }
-            layoutManager = GridLayoutManager(requireContext(), columnCount)
-            setHasFixedSize(true)
-            addItemDecoration(object : RecyclerView.ItemDecoration() {
-                private fun getOffsets(position: Int, itemCount: Int): Rect {
-                    val defaultMargin = context.dpToPx(2)
-
-                    val left = if (position % columnCount == 0) 0 else defaultMargin
-                    val top = if (position < columnCount) 0 else defaultMargin
-                    val right = if ((position + 1) % columnCount == 0) 0 else defaultMargin
-                    val bottom = if (position >= (itemCount / columnCount * columnCount)) 0 else
-                        defaultMargin
-
-                    return Rect(left, top, right, bottom)
-                }
-
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
-                    val position = getChildAdapterPosition(view)
-                    outRect.set(getOffsets(position, state.itemCount))
-                }
-            })
         }
     }
 
@@ -152,15 +128,17 @@ class PhotoListFragment : Fragment() {
                     isVisible = it.photos.isNotEmpty()
 
                     val list = arrayListOf<UiModel>()
-                    list.add(UiModel.ActionUiModel(
-                        -1,
-                        R.drawable.ic_baseline_collections_24,
-                        R.string.photos_open_photos_action,
-                        Intent.ACTION_OPEN_DOCUMENT
-                    ))
-                    list.addAll(it.photos.map {
-                            photo -> UiModel.PhotoUiModel(photo.id, photo.uri)
-                    })
+                    if (it.photos.isNotEmpty()) {
+                        list.add(UiModel.ActionUiModel(
+                            -1,
+                            R.drawable.ic_baseline_collections_24,
+                            R.string.photos_open_photos_action,
+                            Intent.ACTION_OPEN_DOCUMENT
+                        ))
+                        list.addAll(it.photos.map {
+                                photo -> UiModel.PhotoUiModel(photo.id, photo.uri)
+                        })
+                    }
                     (adapter as PhotoListAdapter).submitList(list)
                 }
 
