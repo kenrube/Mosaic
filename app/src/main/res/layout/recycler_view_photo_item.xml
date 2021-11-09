@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.kenrube.mosaic.utils.widgets.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="wrap_content"
     android:foreground="@drawable/selectable_item_foreground"
     android:clickable="true"
     android:focusable="true"
@@ -11,10 +11,10 @@
     <ImageView
         android:id="@+id/photo"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="match_parent"
         android:contentDescription="@null"
         tools:src="@tools:sample/avatars">
 
     </ImageView>
 
-</FrameLayout>
+</com.kenrube.mosaic.utils.widgets.SquareFrameLayout>
