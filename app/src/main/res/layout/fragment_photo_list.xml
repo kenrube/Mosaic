@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -63,13 +64,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize"
+        android:layout_marginStart="-3dp"
+        android:layout_marginEnd="-3dp"
         android:descendantFocusability="blocksDescendants"
         android:visibility="invisible"
-        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="3"
         tools:listitem="@layout/recycler_view_photo_item"
         tools:orientation="vertical"
         tools:itemCount="7"
-        tools:spanCount="3"
         tools:visibility="visible" />
 
 </FrameLayout>
