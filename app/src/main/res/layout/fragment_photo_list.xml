@@ -33,8 +33,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="?actionBarSize"
         android:orientation="vertical"
-        android:visibility="invisible"
-        tools:visibility="visible">
+        android:visibility="invisible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -60,14 +59,17 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/photo_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize"
         android:descendantFocusability="blocksDescendants"
         android:visibility="invisible"
-        tools:layoutManager="GridLayoutManager"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/recycler_view_photo_item"
-        tools:spanCount="3" />
+        tools:orientation="vertical"
+        tools:itemCount="7"
+        tools:spanCount="3"
+        tools:visibility="visible" />
 
 </FrameLayout>

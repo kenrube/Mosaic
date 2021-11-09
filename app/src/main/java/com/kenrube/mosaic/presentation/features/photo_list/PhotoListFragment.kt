@@ -100,7 +100,7 @@ class PhotoListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        binding.recyclerView.apply {
+        binding.photoList.apply {
             val columnCount = 3
 
             adapter = PhotoListAdapter { item ->
@@ -148,7 +148,7 @@ class PhotoListFragment : Fragment() {
             viewModel.state.collect {
                 binding.progress.isVisible = it.loading
                 binding.photosAccessWarning.isVisible = it.showingPermissionWarning
-                binding.recyclerView.apply {
+                binding.photoList.apply {
                     isVisible = it.photos.isNotEmpty()
 
                     val list = arrayListOf<UiModel>()
