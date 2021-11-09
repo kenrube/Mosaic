@@ -25,11 +25,11 @@ import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDial
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoListAdapter
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.UiModel
 import com.kenrube.mosaic.presentation.permissions.PermissionStatus
+import com.kenrube.mosaic.utils.dpToPx
 import com.kenrube.mosaic.utils.openAppSystemSettings
-import com.kenrube.mosaic.utils.widgets.BoundlessItemDecoration
+import com.kenrube.mosaic.utils.widgets.EqualSpacingItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PhotoListFragment : Fragment() {
@@ -59,9 +59,6 @@ class PhotoListFragment : Fragment() {
             val uri = result.data?.data
             uri?.let { navigateToPhoto(it) }
         }
-
-    @Inject
-    lateinit var decoration: BoundlessItemDecoration
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,7 +100,7 @@ class PhotoListFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.photoList.apply {
             setHasFixedSize(true)
-            addItemDecoration(decoration)
+            addItemDecoration(EqualSpacingItemDecoration(context.dpToPx(3)))
             adapter = PhotoListAdapter { item ->
                 when (item) {
                     is UiModel.PhotoUiModel -> {
