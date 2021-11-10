@@ -1,13 +1,14 @@
 package com.kenrube.mosaic.presentation.features.photo_list.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.kenrube.mosaic.databinding.RecyclerViewActionItemBinding
 import com.kenrube.mosaic.databinding.RecyclerViewPhotoItemBinding
 
-class PhotoListAdapter(private val onClick: (UiModel) -> Unit) :
+class PhotoListAdapter(private val onClick: (View?, UiModel) -> Unit) :
     ListAdapter<UiModel, ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =

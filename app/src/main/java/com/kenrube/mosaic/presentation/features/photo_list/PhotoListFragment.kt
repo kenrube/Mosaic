@@ -16,6 +16,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.data.supportedMimeTypes
@@ -57,7 +58,7 @@ class PhotoListFragment : Fragment() {
     private val openStoragePhotoPickerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             val uri = result.data?.data
-            uri?.let { navigateToPhoto(it) }
+            uri?.let { navigateToPhoto(null, it) }
         }
 
     override fun onCreateView(
@@ -101,10 +102,10 @@ class PhotoListFragment : Fragment() {
         binding.photoList.apply {
             setHasFixedSize(true)
             addItemDecoration(EqualSpacingItemDecoration(context.dpToPx(3)))
-            adapter = PhotoListAdapter { item ->
+            adapter = PhotoListAdapter { view, item ->
                 when (item) {
                     is UiModel.PhotoUiModel -> {
-                        navigateToPhoto(item.uri)
+                        navigateToPhoto(view, item.uri)
                     }
                     is UiModel.ActionUiModel -> {
                         if (item.action == Intent.ACTION_OPEN_DOCUMENT) {
@@ -169,8 +170,13 @@ class PhotoListFragment : Fragment() {
         openStoragePhotoPickerLauncher.launch(intent)
     }
 
-    private fun navigateToPhoto(uri: Uri) {
+    private fun navigateToPhoto(sharedImageView: View?, uri: Uri) {
         val action = PhotoListFragmentDirections.openPhotoAction(uri)
+        sharedImageView?.let {
+            val extras = FragmentNavigatorExtras(it to uri.toString())
+            findNavController().navigate(action, extras)
+            return
+        }
         findNavController().navigate(action)
     }
 }
