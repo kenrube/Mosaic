@@ -28,7 +28,7 @@ import com.kenrube.mosaic.presentation.features.photo_list.adapter.UiModel
 import com.kenrube.mosaic.presentation.permissions.PermissionStatus
 import com.kenrube.mosaic.utils.dpToPx
 import com.kenrube.mosaic.utils.openAppSystemSettings
-import com.kenrube.mosaic.utils.widgets.EqualSpacingItemDecoration
+import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -101,7 +101,7 @@ class PhotoListFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.photoList.apply {
             setHasFixedSize(true)
-            addItemDecoration(EqualSpacingItemDecoration(context.dpToPx(3)))
+            addItemDecoration(PhotoItemDecoration(context.dpToPx(3)))
             adapter = PhotoListAdapter { view, item ->
                 when (item) {
                     is UiModel.PhotoUiModel -> {
