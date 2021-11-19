@@ -10,4 +10,10 @@
     <string name="photos_access_close">Close</string>
 
     <string name="photos_open_photos_action">Open photos</string>
+
+    <string name="filter_intensity">Filter intensity</string>
+    <string name="filter_pixelation">Pixelation</string>
+    <string name="filter_saturation">Saturation</string>
+    <string name="filter_solarize">Solarize</string>
+    <string name="filter_swirl">Swirl</string>
 </resources>

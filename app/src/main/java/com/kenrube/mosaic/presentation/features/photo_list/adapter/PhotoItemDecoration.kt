@@ -1,11 +1,11 @@
-package com.kenrube.mosaic.utils.widgets
+package com.kenrube.mosaic.presentation.features.photo_list.adapter
 
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class EqualSpacingItemDecoration(private val spacing: Int) : RecyclerView.ItemDecoration() {
+class PhotoItemDecoration(private val spacing: Int) : RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
         outRect: Rect,

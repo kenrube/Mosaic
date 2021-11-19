@@ -1,6 +1,7 @@
 package com.kenrube.mosaic.presentation.features.photo
 
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.LayoutInflater
@@ -14,7 +15,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.FragmentPhotoBinding
+import com.kenrube.mosaic.presentation.features.photo.adapter.FilterListAdapter
+import com.kenrube.mosaic.presentation.features.photo.adapter.FilterItemDecoration
+import com.kenrube.mosaic.presentation.features.photo.adapter.UiFilter
 import com.kenrube.mosaic.utils.GlideApp
+import com.kenrube.mosaic.utils.dpToPx
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,24 +30,30 @@ class PhotoFragment : Fragment() {
 
     private val args: PhotoFragmentArgs by navArgs()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = TransitionInflater.from(context)
+            .inflateTransition(R.transition.shared_image)
+        sharedElementReturnTransition = null
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPhotoBinding.inflate(inflater, container, false)
-
-        sharedElementEnterTransition = TransitionInflater.from(context)
-            .inflateTransition(R.transition.shared_image)
-        sharedElementReturnTransition = null
         postponeEnterTransition()
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupUI()
+    }
+
+    private fun setupUI() {
         val photoUri = args.photoUri
         binding.photo.transitionName = photoUri.toString()
         GlideApp.with(this)
@@ -70,5 +81,27 @@ class PhotoFragment : Fragment() {
                 }
             })
             .into(binding.photo)
+
+        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        binding.filterList.apply {
+            setHasFixedSize(true)
+            addItemDecoration(FilterItemDecoration(context.dpToPx(16), context.dpToPx(6)))
+            adapter = FilterListAdapter { item, isFirstClick ->
+                if (isFirstClick) {
+                    // todo apply filter
+                } else {
+                    // todo open filter intensity dialog
+                }
+            }
+            (adapter as FilterListAdapter).submitList(listOf(
+                UiFilter(0, Uri.EMPTY, getString(R.string.filter_pixelation)),
+                UiFilter(1, Uri.EMPTY, getString(R.string.filter_saturation)),
+                UiFilter(2, Uri.EMPTY, getString(R.string.filter_solarize)),
+                UiFilter(3, Uri.EMPTY, getString(R.string.filter_swirl)),
+            ))
+        }
     }
 }
