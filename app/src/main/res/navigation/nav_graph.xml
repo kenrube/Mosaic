@@ -15,10 +15,22 @@
     <fragment
         android:id="@+id/photoFragment"
         android:name="com.kenrube.mosaic.presentation.features.photo.PhotoFragment"
-        tools:layout="@layout/fragment_photo" >
+        tools:layout="@layout/fragment_photo">
         <argument
             android:name="photoUri"
             app:argType="android.net.Uri"
             app:nullable="false" />
+        <action
+            android:id="@+id/openFilterIntensityDialogAction"
+            app:destination="@id/filterIntensityDialog" />
     </fragment>
+    <dialog
+        android:id="@+id/filterIntensityDialog"
+        android:name="com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet"
+        tools:layout="@layout/bottom_sheet_filter_intensity">
+        <argument
+            android:name="initialIntensity"
+            app:argType="integer"
+            app:nullable="false" />
+    </dialog>
 </navigation>

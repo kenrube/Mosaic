@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_baseline_close_24"
+            android:contentDescription="@string/filter_intensity_close_button_content_description"
+            app:tint="@color/silver" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            android:text="@string/filter_intensity" />
+
+        <TextView
+            android:id="@+id/apply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:textColor="@color/gold"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:text="@string/filter_intensity_apply"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="RelativeOverlap" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/bistre" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="48dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/white_1"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"
+                android:fontFamily="sans-serif-medium"
+                android:textAllCaps="true"
+                android:text="@string/filter_intensity"
+                tools:ignore="RelativeOverlap,SmallSp" />
+
+            <TextView
+                android:id="@+id/intensity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/white_1"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"
+                android:fontFamily="sans-serif-medium"
+                tools:ignore="RelativeOverlap,SmallSp"
+                tools:text="100" />
+
+        </RelativeLayout>
+
+        <SeekBar
+            android:id="@+id/intensity_slider"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:max="100"
+            style="@style/Widget.App.SeekBar" />
+
+    </LinearLayout>
+
+</LinearLayout>

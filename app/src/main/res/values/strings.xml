@@ -11,9 +11,12 @@
 
     <string name="photos_open_photos_action">Open photos</string>
 
-    <string name="filter_intensity">Filter intensity</string>
     <string name="filter_pixelation">Pixelation</string>
     <string name="filter_saturation">Saturation</string>
     <string name="filter_solarize">Solarize</string>
     <string name="filter_swirl">Swirl</string>
+
+    <string name="filter_intensity">Filter Intensity</string>
+    <string name="filter_intensity_apply">Apply</string>
+    <string name="filter_intensity_close_button_content_description">Close filter intensity dialog</string>
 </resources>

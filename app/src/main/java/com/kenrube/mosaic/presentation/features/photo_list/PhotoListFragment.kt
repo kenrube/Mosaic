@@ -171,12 +171,13 @@ class PhotoListFragment : Fragment() {
     }
 
     private fun navigateToPhoto(sharedImageView: View?, uri: Uri) {
+        val navController = findNavController()
         val action = PhotoListFragmentDirections.openPhotoAction(uri)
         sharedImageView?.let {
             val extras = FragmentNavigatorExtras(it to uri.toString())
-            findNavController().navigate(action, extras)
+            navController.navigate(action, extras)
             return
         }
-        findNavController().navigate(action)
+        navController.navigate(action)
     }
 }
