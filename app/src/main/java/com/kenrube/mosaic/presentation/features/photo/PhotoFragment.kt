@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -15,6 +16,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.FragmentPhotoBinding
+import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.INTENSITY_KEY
 import com.kenrube.mosaic.presentation.features.photo.adapter.FilterListAdapter
 import com.kenrube.mosaic.presentation.features.photo.adapter.FilterItemDecoration
 import com.kenrube.mosaic.presentation.features.photo.adapter.UiFilter
@@ -91,9 +93,17 @@ class PhotoFragment : Fragment() {
             addItemDecoration(FilterItemDecoration(context.dpToPx(16), context.dpToPx(6)))
             adapter = FilterListAdapter { item, isFirstClick ->
                 if (isFirstClick) {
-                    // todo apply filter
+                    // todo apply filter with default intensity
                 } else {
-                    // todo open filter intensity dialog
+                    val navController = findNavController()
+                    val action = PhotoFragmentDirections.openFilterIntensityDialogAction(20)
+                    navController.navigate(action)
+                    navController.getBackStackEntry(R.id.filterIntensityDialog)
+                        .savedStateHandle
+                        .getLiveData<Int>(INTENSITY_KEY)
+                        .observe(viewLifecycleOwner) { intensity ->
+                        // todo apply filter with intensity
+                    }
                 }
             }
             (adapter as FilterListAdapter).submitList(listOf(
