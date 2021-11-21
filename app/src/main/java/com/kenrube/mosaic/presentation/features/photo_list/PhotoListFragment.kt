@@ -12,10 +12,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.kenrube.mosaic.R
@@ -38,17 +38,8 @@ class PhotoListFragment : Fragment() {
     private var _binding: FragmentPhotoListBinding? = null
     private val binding: FragmentPhotoListBinding get() = _binding!!
 
-    private val storagePermissionDialog: StoragePermissionDialogFragment by lazy {
-        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
-            val openSettings = bundle.getBoolean(BUNDLE_KEY)
-            if (openSettings) {
-                requireContext().openAppSystemSettings()
-            }
-        }
-        StoragePermissionDialogFragment()
-    }
-
     private val viewModel: PhotoListViewModel by viewModels()
+    private val navController: NavController by lazy { findNavController() }
 
     private val requestStoragePermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -140,11 +131,10 @@ class PhotoListFragment : Fragment() {
                     (adapter as PhotoListAdapter).submitList(list)
                 }
 
-                // workaround to hide dialog (if it's still shown) when we granted
-                // Storage permission via App Settings and returned to the app
+                // hide dialog (if it's still shown) when we granted Storage permission via
+                // App Settings in separate window and returned back to the app
                 if (!it.loading && !it.showingPermissionWarning /* photos successfully loaded */) {
-                    (childFragmentManager.findFragmentByTag(StoragePermissionDialogFragment.TAG)
-                            as? DialogFragment)?.dismiss()
+                    navController.popBackStack(R.id.photoListFragment, false)
                 }
             }
         }
@@ -158,7 +148,13 @@ class PhotoListFragment : Fragment() {
     }
 
     private fun showPhotoAccessRationaleDialog() {
-        storagePermissionDialog.show(childFragmentManager, StoragePermissionDialogFragment.TAG)
+        parentFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
+            val openSettings = bundle.getBoolean(BUNDLE_KEY)
+            if (openSettings) {
+                requireContext().openAppSystemSettings()
+            }
+        }
+        navController.navigate(PhotoListFragmentDirections.openStoragePermissionDialogAction())
     }
 
     private fun openStoragePhotoPicker() {
@@ -171,7 +167,6 @@ class PhotoListFragment : Fragment() {
     }
 
     private fun navigateToPhoto(sharedImageView: View?, uri: Uri) {
-        val navController = findNavController()
         val action = PhotoListFragmentDirections.openPhotoAction(uri)
         sharedImageView?.let {
             val extras = FragmentNavigatorExtras(it to uri.toString())
