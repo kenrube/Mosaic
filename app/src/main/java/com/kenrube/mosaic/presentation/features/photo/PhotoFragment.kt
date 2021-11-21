@@ -31,6 +31,7 @@ class PhotoFragment : Fragment() {
     private val binding: FragmentPhotoBinding get() = _binding!!
 
     private val args: PhotoFragmentArgs by navArgs()
+    private val navController by lazy { findNavController() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +86,15 @@ class PhotoFragment : Fragment() {
             .into(binding.photo)
 
         setupRecyclerView()
+        binding.close.setOnClickListener {
+            navController.navigateUp()
+        }
+        binding.share.setOnClickListener {
+            // todo share image
+        }
+        binding.save.setOnClickListener {
+            // todo save image
+        }
     }
 
     private fun setupRecyclerView() {
@@ -95,7 +105,6 @@ class PhotoFragment : Fragment() {
                 if (isFirstClick) {
                     // todo apply filter with default intensity
                 } else {
-                    val navController = findNavController()
                     val action = PhotoFragmentDirections.openFilterIntensityDialogAction(20)
                     navController.navigate(action)
                     navController.getBackStackEntry(R.id.filterIntensityDialog)

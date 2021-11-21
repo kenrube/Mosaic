@@ -19,6 +19,7 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
     private val binding: BottomSheetFilterIntensityBinding get() = _binding!!
 
     private val args: FilterIntensityBottomSheetArgs by navArgs()
+    private val navController: NavController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,10 +35,9 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
 
         val initialIntensity = args.initialIntensity
         val behavior = (dialog as BottomSheetDialog).behavior
-        val navController = findNavController()
 
         binding.close.setOnClickListener {
-            navController.sendIntensity(initialIntensity)
+            sendIntensity(initialIntensity)
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         binding.apply.setOnClickListener {
@@ -45,14 +45,14 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
         }
         binding.intensitySlider.onProgressChanged { intensity ->
             binding.intensity.text = intensity.toString()
-            navController.sendIntensity(intensity)
+            sendIntensity(intensity)
         }
 
         binding.intensitySlider.progress = initialIntensity
     }
 
-    private fun NavController.sendIntensity(intensity: Int) {
-        currentBackStackEntry!!.savedStateHandle.set(INTENSITY_KEY, intensity)
+    private fun sendIntensity(intensity: Int) {
+        navController.currentBackStackEntry!!.savedStateHandle.set(INTENSITY_KEY, intensity)
     }
 
     private fun SeekBar.onProgressChanged(action: (Int) -> Unit) {

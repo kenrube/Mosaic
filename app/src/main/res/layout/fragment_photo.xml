@@ -12,6 +12,68 @@
         android:layout_gravity="center_vertical"
         android:contentDescription="@null" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="16dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:background="@drawable/bg_ripple_oval_black_1"
+            android:src="@drawable/ic_baseline_close_24"
+            android:elevation="8dp"
+            android:contentDescription="@string/photo_close_content_description"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/share"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="6dp"
+            android:layout_toStartOf="@id/save"
+            android:layout_centerVertical="true"
+            android:padding="8dp"
+            android:background="@drawable/bg_ripple_oval_black_1"
+            android:src="@drawable/ic_baseline_share_24"
+            android:elevation="8dp"
+            android:contentDescription="@string/photo_share_content_description"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="6dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.05"
+            android:background="@drawable/bg_ripple_rectangle_yellow_corners_16"
+            android:text="@string/photo_save"
+            android:elevation="8dp"/>
+
+    </RelativeLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/filter_list"
         android:layout_width="match_parent"
@@ -24,7 +86,6 @@
         tools:itemCount="4" />
 
     <include
-        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
