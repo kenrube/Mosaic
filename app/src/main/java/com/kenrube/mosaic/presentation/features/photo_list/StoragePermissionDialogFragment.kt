@@ -11,7 +11,6 @@ import com.kenrube.mosaic.R
 class StoragePermissionDialogFragment : DialogFragment() {
 
     companion object {
-        const val TAG = "StoragePermissionDialogFragment"
         const val REQUEST_KEY = "RequestKey"
         const val BUNDLE_KEY = "BundleKey"
     }
