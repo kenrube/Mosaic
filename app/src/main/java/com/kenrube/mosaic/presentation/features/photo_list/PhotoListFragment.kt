@@ -134,7 +134,7 @@ class PhotoListFragment : Fragment() {
                 // hide dialog (if it's still shown) when we granted Storage permission via
                 // App Settings in separate window and returned back to the app
                 if (!it.loading && !it.showingPermissionWarning /* photos successfully loaded */) {
-                    navController.popBackStack(R.id.photoListFragment, false)
+                    navController.popBackStack(R.id.storagePermissionDialog, true)
                 }
             }
         }
