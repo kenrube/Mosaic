@@ -148,7 +148,7 @@ class PhotoListFragment : Fragment() {
     }
 
     private fun showPhotoAccessRationaleDialog() {
-        parentFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
+        parentFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
             val openSettings = bundle.getBoolean(BUNDLE_KEY)
             if (openSettings) {
                 requireContext().openAppSystemSettings()

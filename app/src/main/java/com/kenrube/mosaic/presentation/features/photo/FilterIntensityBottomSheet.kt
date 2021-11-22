@@ -1,17 +1,20 @@
 package com.kenrube.mosaic.presentation.features.photo
 
+import android.app.Dialog
 import android.os.Bundle
+import android.view.KeyEvent.ACTION_UP
+import android.view.KeyEvent.KEYCODE_BACK
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.BottomSheetFilterIntensityBinding
+import com.kenrube.mosaic.utils.setNavigationResult
 
 class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
 
@@ -19,7 +22,20 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
     private val binding: BottomSheetFilterIntensityBinding get() = _binding!!
 
     private val args: FilterIntensityBottomSheetArgs by navArgs()
-    private val navController: NavController by lazy { findNavController() }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return super.onCreateDialog(savedInstanceState).apply {
+            // Recommended way to handle backpress (ComponentActivity#onBackPressedDispatcher)
+            // doesn't work in dialogs (https://issuetracker.google.com/issues/149173280)
+            setOnKeyListener { _, keyCode, event ->
+                if (keyCode == KEYCODE_BACK && event.action == ACTION_UP) {
+                    binding.close.performClick()
+                    return@setOnKeyListener true
+                }
+                return@setOnKeyListener false
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +53,8 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
         val behavior = (dialog as BottomSheetDialog).behavior
 
         binding.close.setOnClickListener {
-            sendIntensity(initialIntensity)
+            setNavigationResult(INTENSITY_KEY, initialIntensity)
+            setNavigationResult(CLOSE_FILTER_INTENSITY_DIALOG_KEY, true)
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         binding.apply.setOnClickListener {
@@ -45,14 +62,24 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
         }
         binding.intensitySlider.onProgressChanged { intensity ->
             binding.intensity.text = intensity.toString()
-            sendIntensity(intensity)
+            setNavigationResult(INTENSITY_KEY, intensity)
         }
 
         binding.intensitySlider.progress = initialIntensity
     }
 
-    private fun sendIntensity(intensity: Int) {
-        navController.currentBackStackEntry!!.savedStateHandle.set(INTENSITY_KEY, intensity)
+    override fun onResume() {
+        super.onResume()
+        // Workaround to prevent repeated enter animation after resume (see also #onPause).
+        // If we'll use Window#setWindowAnimations here, animation will happen
+        // (thx, Window#dispatchWindowAttributesChanged)
+        dialog?.window?.attributes?.windowAnimations = R.style.Animation_App_BottomSheetDialog
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Workaround to prevent repeated enter animation after resume (see also #onResume)
+        dialog?.window?.setWindowAnimations(-1)
     }
 
     private fun SeekBar.onProgressChanged(action: (Int) -> Unit) {
@@ -69,5 +96,6 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val INTENSITY_KEY = "IntensityKey"
+        const val CLOSE_FILTER_INTENSITY_DIALOG_KEY = "OnBackPressedKey"
     }
 }
