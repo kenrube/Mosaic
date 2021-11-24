@@ -43,8 +43,10 @@ class PhotoFragment : Fragment() {
     private val intensityObserver = Observer<Int> {
         // todo apply filter with intensity
     }
-    private val closeFilterIntensityDialogObserver = Observer<Boolean> {
-        showViews()
+    private val closeFilterIntensityDialogObserver = Observer<Boolean> { isClosed ->
+        if (isClosed) {
+            showViews()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,14 +77,6 @@ class PhotoFragment : Fragment() {
             .observe(viewLifecycleOwner, intensityObserver)
         getNavigationResult<Boolean>(CLOSE_FILTER_INTENSITY_DIALOG_KEY)!!
             .observe(viewLifecycleOwner, closeFilterIntensityDialogObserver)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        getNavigationResult<Int>(INTENSITY_KEY)!!
-            .removeObserver(intensityObserver)
-        getNavigationResult<Boolean>(CLOSE_FILTER_INTENSITY_DIALOG_KEY)!!
-            .removeObserver(closeFilterIntensityDialogObserver)
     }
 
     private fun setupUI() {

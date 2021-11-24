@@ -20,58 +20,58 @@
 
         <ImageView
             android:id="@+id/close"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="16dp"
+            android:layout_width="@dimen/action_button_size"
+            android:layout_height="@dimen/action_button_size"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:padding="8dp"
-            android:background="@drawable/bg_ripple_oval_black_1"
-            android:src="@drawable/ic_baseline_close_24"
-            android:elevation="8dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_ripple_oval_black"
             android:contentDescription="@string/photo_close_content_description"
+            android:elevation="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_close_24"
             app:tint="@color/white" />
 
         <ImageView
             android:id="@+id/share"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="6dp"
-            android:layout_toStartOf="@id/save"
+            android:layout_width="@dimen/action_button_size"
+            android:layout_height="@dimen/action_button_size"
             android:layout_centerVertical="true"
-            android:padding="8dp"
-            android:background="@drawable/bg_ripple_oval_black_1"
-            android:src="@drawable/ic_baseline_share_24"
-            android:elevation="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="16dp"
+            android:layout_toStartOf="@id/save"
+            android:background="@drawable/bg_ripple_oval_black"
             android:contentDescription="@string/photo_share_content_description"
+            android:elevation="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_share_24"
             app:tint="@color/white" />
 
         <TextView
             android:id="@+id/save"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="6dp"
+            android:layout_height="@dimen/action_button_size"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:textSize="12sp"
-            android:textColor="@color/black"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_ripple_rectangle_yellow_600_corners_16"
+            android:elevation="8dp"
             android:fontFamily="sans-serif-medium"
-            android:textStyle="bold"
-            android:textAllCaps="true"
+            android:gravity="center"
             android:includeFontPadding="false"
             android:letterSpacing="0.05"
-            android:background="@drawable/bg_ripple_rectangle_yellow_corners_16"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:text="@string/photo_save"
-            android:elevation="8dp"/>
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 
@@ -83,14 +83,14 @@
         android:orientation="horizontal"
         android:overScrollMode="never"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/recycler_view_filter_item"
-        tools:itemCount="4" />
+        tools:itemCount="4"
+        tools:listitem="@layout/recycler_view_filter_item" />
 
     <include
+        layout="@layout/bottom_sheet_filter_intensity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        layout="@layout/bottom_sheet_filter_intensity"
         app:layout_behavior="@string/bottom_sheet_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

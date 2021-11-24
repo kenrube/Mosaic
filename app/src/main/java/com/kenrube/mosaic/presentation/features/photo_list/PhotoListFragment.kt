@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -21,14 +22,13 @@ import androidx.navigation.fragment.findNavController
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.data.supportedMimeTypes
 import com.kenrube.mosaic.databinding.FragmentPhotoListBinding
-import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment.Companion.BUNDLE_KEY
-import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment.Companion.REQUEST_KEY
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoListAdapter
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.UiModel
 import com.kenrube.mosaic.presentation.permissions.PermissionStatus
 import com.kenrube.mosaic.utils.dpToPx
 import com.kenrube.mosaic.utils.openAppSystemSettings
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoItemDecoration
+import com.kenrube.mosaic.utils.getNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -52,6 +52,12 @@ class PhotoListFragment : Fragment() {
             uri?.let { navigateToPhoto(null, it) }
         }
 
+    private val closeStoragePermissionDialogObserver = Observer<Boolean> { isClosed ->
+        if (isClosed) {
+            requireContext().openAppSystemSettings()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,6 +74,12 @@ class PhotoListFragment : Fragment() {
         observeViewState()
     }
 
+    override fun onStart() {
+        super.onStart()
+        getNavigationResult<Boolean>(StoragePermissionDialogFragment.CLOSE_STORAGE_PERMISSION_DIALOG_KEY)!!
+            .observe(viewLifecycleOwner, closeStoragePermissionDialogObserver)
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -82,7 +94,7 @@ class PhotoListFragment : Fragment() {
         setupRecyclerView()
         binding.allowPhotosAccess.setOnClickListener {
             if (shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE)) {
-                showPhotoAccessRationaleDialog()
+                openPhotoAccessRationaleDialog()
             } else {
                 requestStoragePermissionLauncher.launch(READ_EXTERNAL_STORAGE)
             }
@@ -131,7 +143,7 @@ class PhotoListFragment : Fragment() {
                     (adapter as PhotoListAdapter).submitList(list)
                 }
 
-                // hide dialog (if it's still shown) when we granted Storage permission via
+                // Hide dialog (if it's still shown) when we granted Storage permission via
                 // App Settings in separate window and returned back to the app
                 if (!it.loading && !it.showingPermissionWarning /* photos successfully loaded */) {
                     navController.popBackStack(R.id.storagePermissionDialog, true)
@@ -147,13 +159,7 @@ class PhotoListFragment : Fragment() {
             PermissionStatus.PermissionDenied
     }
 
-    private fun showPhotoAccessRationaleDialog() {
-        parentFragmentManager.setFragmentResultListener(REQUEST_KEY, this) { _, bundle ->
-            val openSettings = bundle.getBoolean(BUNDLE_KEY)
-            if (openSettings) {
-                requireContext().openAppSystemSettings()
-            }
-        }
+    private fun openPhotoAccessRationaleDialog() {
         navController.navigate(PhotoListFragmentDirections.openStoragePermissionDialogAction())
     }
 

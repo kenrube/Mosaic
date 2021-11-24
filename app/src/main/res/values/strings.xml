@@ -1,16 +1,21 @@
 <resources>
     <string name="app_name">Mosaic</string>
 
+    <!-- region Photo list screen -->
+    <string name="photos_open_photos_action">Open photos</string>
+
     <string name="photos_access_header">Access to Photos</string>
     <string name="photos_access_message">Allow access to use photos\nfrom your device storage</string>
     <string name="photos_access_button_title">Allow access</string>
 
+    <!-- region Storage permission dialog -->
     <string name="photos_access_dialog_message">Open Settings, then tap Permissions and turn on Storage</string>
     <string name="photos_access_open_settings">Open Settings</string>
     <string name="photos_access_close">Close</string>
+    <!-- endregion -->
+    <!-- endregion -->
 
-    <string name="photos_open_photos_action">Open photos</string>
-
+    <!-- region Photo screen -->
     <string name="photo_close_content_description">Close photo screen</string>
     <string name="photo_share_content_description">Share photo</string>
     <string name="photo_save">Save</string>
@@ -20,7 +25,10 @@
     <string name="filter_solarize">Solarize</string>
     <string name="filter_swirl">Swirl</string>
 
+    <!-- region Filter intensity dialog -->
     <string name="filter_intensity">Filter Intensity</string>
     <string name="filter_intensity_apply">Apply</string>
     <string name="filter_intensity_close_content_description">Close filter intensity dialog</string>
+    <!-- endregion -->
+    <!-- endregion -->
 </resources>
