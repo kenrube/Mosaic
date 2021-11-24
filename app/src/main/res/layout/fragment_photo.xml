@@ -25,11 +25,11 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_margin="16dp"
-            android:background="@drawable/bg_ripple_oval_black"
+            android:background="@drawable/ripple_oval_black"
             android:contentDescription="@string/photo_close_content_description"
             android:elevation="8dp"
             android:padding="8dp"
-            android:src="@drawable/ic_baseline_close_24"
+            android:src="@drawable/ic_close_24"
             app:tint="@color/white" />
 
         <ImageView
@@ -42,11 +42,11 @@
             android:layout_marginEnd="6dp"
             android:layout_marginBottom="16dp"
             android:layout_toStartOf="@id/save"
-            android:background="@drawable/bg_ripple_oval_black"
+            android:background="@drawable/ripple_oval_black"
             android:contentDescription="@string/photo_share_content_description"
             android:elevation="8dp"
             android:padding="8dp"
-            android:src="@drawable/ic_baseline_share_24"
+            android:src="@drawable/ic_share_24"
             app:tint="@color/white" />
 
         <TextView
@@ -59,7 +59,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/bg_ripple_rectangle_yellow_600_corners_16"
+            android:background="@drawable/ripple_rectangle_yellow_600_corners_16"
             android:elevation="8dp"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"

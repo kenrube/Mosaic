@@ -22,7 +22,7 @@
             android:contentDescription="@string/filter_intensity_close_content_description"
             android:focusable="true"
             android:padding="8dp"
-            android:src="@drawable/ic_baseline_close_24"
+            android:src="@drawable/ic_close_24"
             app:tint="@color/grey_400" />
 
         <TextView
