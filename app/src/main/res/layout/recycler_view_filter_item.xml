@@ -2,9 +2,9 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:foreground="@drawable/fg_selector_black_a1"
+    android:layout_width="@dimen/filter_item_size"
+    android:layout_height="@dimen/filter_item_size"
+    android:foreground="@drawable/fg_selector_white_010"
     app:cardElevation="2dp">
 
     <ImageView
@@ -19,23 +19,23 @@
         android:layout_width="match_parent"
         android:layout_height="24dp"
         android:layout_gravity="bottom"
+        android:background="@color/white_0c0"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:lines="1"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
-        android:includeFontPadding="false"
-        android:gravity="center"
-        android:textColor="#FF4D4D4D"
+        android:textColor="@color/grey_800"
         android:textSize="12sp"
-        android:lines="1"
-        android:fontFamily="sans-serif-medium"
-        android:ellipsize="end"
-        android:background="@color/white_a1"
         tools:text="Filter title" />
 
     <FrameLayout
         android:id="@+id/selected"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_stroke_yellow"
+        android:background="@drawable/bg_stroke_yellow_600"
         android:visibility="gone"
         tools:visibility="visible">
 

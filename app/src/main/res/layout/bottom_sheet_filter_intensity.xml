@@ -15,42 +15,42 @@
             android:id="@+id/close"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="8dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:padding="8dp"
+            android:layout_marginStart="8dp"
             android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/ic_baseline_close_24"
             android:contentDescription="@string/filter_intensity_close_content_description"
-            app:tint="@color/silver" />
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_baseline_close_24"
+            app:tint="@color/grey_400" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:fontFamily="sans-serif"
+            android:text="@string/filter_intensity"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:fontFamily="sans-serif"
-            android:textStyle="bold"
-            android:text="@string/filter_intensity" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/apply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:padding="8dp"
-            android:textColor="@color/gold"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif-medium"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:text="@string/filter_intensity_apply"
+            android:layout_marginEnd="8dp"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="sans-serif-medium"
+            android:padding="8dp"
+            android:text="@string/filter_intensity_apply"
+            android:textAllCaps="true"
+            android:textColor="@color/yellow_600"
+            android:textSize="14sp"
+            android:textStyle="bold"
             tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
@@ -59,13 +59,13 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="4dp"
-        android:background="@color/bistre" />
+        android:background="@color/grey_900" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
         android:layout_marginStart="28dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="48dp"
         android:orientation="vertical">
@@ -79,12 +79,12 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:textColor="@color/white_1"
-                android:textSize="10sp"
-                android:letterSpacing="0.1"
                 android:fontFamily="sans-serif-medium"
-                android:textAllCaps="true"
+                android:letterSpacing="0.1"
                 android:text="@string/filter_intensity"
+                android:textAllCaps="true"
+                android:textColor="@color/grey_100"
+                android:textSize="10sp"
                 tools:ignore="RelativeOverlap,SmallSp" />
 
             <TextView
@@ -93,10 +93,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:textColor="@color/white_1"
-                android:textSize="10sp"
-                android:letterSpacing="0.1"
                 android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1"
+                android:textColor="@color/grey_100"
+                android:textSize="10sp"
                 tools:ignore="RelativeOverlap,SmallSp"
                 tools:text="100" />
 
@@ -104,10 +104,10 @@
 
         <SeekBar
             android:id="@+id/intensity_slider"
+            style="@style/Widget.App.SeekBar"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:max="100"
-            style="@style/Widget.App.SeekBar" />
+            android:layout_height="@dimen/seekbar_height"
+            android:max="@integer/filter_intensity_max" />
 
     </LinearLayout>
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="app_icon_size">32dp</dimen>
+    <dimen name="action_button_size">32dp</dimen>
+    <dimen name="filter_item_size">100dp</dimen>
+    <dimen name="bottom_sheet_corner_size">16dp</dimen>
+    <dimen name="seekbar_height">32dp</dimen>
+    <dimen name="seekbar_progress_height">4dp</dimen>
+    <dimen name="seekbar_thumb_size">20dp</dimen>
+
+    <integer name="filter_intensity_max">100</integer>
+</resources>

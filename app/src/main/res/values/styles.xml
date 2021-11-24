@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="Widget.App.Button.TextButton.Dialog" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:letterSpacing">-0.001</item>
+    </style>
+
+    <style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
     <style name="Widget.App.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
         <item name="backgroundTint">@color/black</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.LargeComponent</item>
@@ -7,7 +16,7 @@
     </style>
 
     <style name="ShapeAppearance.App.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">@dimen/bottom_sheet_corner_size</item>
     </style>
 
     <style name="Animation.App.BottomSheetDialog" parent="Animation.AppCompat.Dialog">
@@ -16,8 +25,8 @@
     </style>
 
     <style name="Widget.App.SeekBar" parent="android:Widget.SeekBar">
-        <item name="android:minHeight">4dp</item>
-        <item name="android:maxHeight">4dp</item>
+        <item name="android:minHeight">@dimen/seekbar_progress_height</item>
+        <item name="android:maxHeight">@dimen/seekbar_progress_height</item>
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
         <item name="android:progressDrawable">@drawable/seekbar_progress</item>
