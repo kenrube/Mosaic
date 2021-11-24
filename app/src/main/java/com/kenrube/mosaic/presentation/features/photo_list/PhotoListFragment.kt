@@ -132,7 +132,7 @@ class PhotoListFragment : Fragment() {
                     if (it.photos.isNotEmpty()) {
                         list.add(UiModel.ActionUiModel(
                             -1,
-                            R.drawable.ic_baseline_collections_24,
+                            R.drawable.ic_collections_24,
                             R.string.photos_open_photos_action,
                             Intent.ACTION_OPEN_DOCUMENT
                         ))

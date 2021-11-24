@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/filter_item_size"
     android:layout_height="@dimen/filter_item_size"
-    android:foreground="@drawable/fg_selector_white_010"
+    android:foreground="@drawable/selector_white_010"
     app:cardElevation="2dp">
 
     <ImageView
@@ -35,16 +35,16 @@
         android:id="@+id/selected"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_stroke_yellow_600"
+        android:foreground="@drawable/layer_list_stroke_yellow_600"
         android:visibility="gone"
         tools:visibility="visible">
 
-        <!-- todo triple-dot image -->
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="@dimen/filter_item_dots_size"
+            android:layout_height="@dimen/filter_item_dots_size"
             android:layout_gravity="center"
-            android:contentDescription="@string/filter_intensity" />
+            android:contentDescription="@string/filter_intensity"
+            android:src="@drawable/ic_dots_horizontal_24" />
 
     </FrameLayout>
 
