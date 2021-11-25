@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -18,13 +19,12 @@ import com.bumptech.glide.request.target.Target
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.FragmentPhotoBinding
 import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.INTENSITY_KEY
-import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.CLOSE_FILTER_INTENSITY_DIALOG_KEY
+import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY
+import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.CLOSE_FILTER_INTENSITY_DIALOG_RESULT_KEY
 import com.kenrube.mosaic.presentation.features.photo.adapter.FilterListAdapter
 import com.kenrube.mosaic.presentation.features.photo.adapter.FilterItemDecoration
 import com.kenrube.mosaic.presentation.features.photo.adapter.UiFilter
-import com.kenrube.mosaic.utils.GlideApp
-import com.kenrube.mosaic.utils.dpToPx
-import com.kenrube.mosaic.utils.getNavigationResult
+import com.kenrube.mosaic.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,11 +40,13 @@ class PhotoFragment : Fragment() {
         resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
     }
 
-    private val intensityObserver = Observer<Int> {
+    private val intensityObserver = Observer<Int> { intensity ->
         // todo apply filter with intensity
     }
-    private val closeFilterIntensityDialogObserver = Observer<Boolean> { isClosed ->
-        if (isClosed) {
+
+    private val closeFilterIntensityDialogResultListener = FragmentResultListener { _, bundle ->
+        val isDialogClosed = bundle.getBoolean(CLOSE_FILTER_INTENSITY_DIALOG_RESULT_KEY)
+        if (isDialogClosed) {
             showViews()
         }
     }
@@ -73,10 +75,8 @@ class PhotoFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        getNavigationResult<Int>(INTENSITY_KEY)!!
+        getNavigationResultLiveData<Int>(INTENSITY_KEY)!!
             .observe(viewLifecycleOwner, intensityObserver)
-        getNavigationResult<Boolean>(CLOSE_FILTER_INTENSITY_DIALOG_KEY)!!
-            .observe(viewLifecycleOwner, closeFilterIntensityDialogObserver)
     }
 
     private fun setupUI() {
@@ -132,12 +132,14 @@ class PhotoFragment : Fragment() {
                     openFilterIntensityDialog()
                 }
             }
-            (adapter as FilterListAdapter).submitList(listOf(
-                UiFilter(0, Uri.EMPTY, getString(R.string.filter_pixelation)),
-                UiFilter(1, Uri.EMPTY, getString(R.string.filter_saturation)),
-                UiFilter(2, Uri.EMPTY, getString(R.string.filter_solarize)),
-                UiFilter(3, Uri.EMPTY, getString(R.string.filter_swirl)),
-            ))
+            (adapter as FilterListAdapter).submitList(
+                listOf(
+                    UiFilter(0, Uri.EMPTY, getString(R.string.filter_pixelation)),
+                    UiFilter(1, Uri.EMPTY, getString(R.string.filter_saturation)),
+                    UiFilter(2, Uri.EMPTY, getString(R.string.filter_solarize)),
+                    UiFilter(3, Uri.EMPTY, getString(R.string.filter_swirl)),
+                )
+            )
         }
     }
 
@@ -170,6 +172,12 @@ class PhotoFragment : Fragment() {
     }
 
     private fun openFilterIntensityDialog() {
+        parentFragmentManager.setFragmentResultListener(
+            CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY,
+            viewLifecycleOwner,
+            closeFilterIntensityDialogResultListener
+        )
+
         val action = PhotoFragmentDirections.openFilterIntensityDialogAction(20)
         navController.navigate(action)
     }

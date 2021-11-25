@@ -17,7 +17,7 @@ class MosaicGlideModule : AppGlideModule() {
     override fun applyOptions(context: Context, builder: GlideBuilder) {
         builder.apply {
             setDefaultRequestOptions {
-                // we load only local images so we can cache them already decoded
+                // We load only local images so we can cache them already decoded
                 RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             }
             if (BuildConfig.DEBUG) {

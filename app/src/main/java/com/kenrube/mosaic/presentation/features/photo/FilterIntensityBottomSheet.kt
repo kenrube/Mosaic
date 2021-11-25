@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -54,7 +56,10 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
 
         binding.close.setOnClickListener {
             setNavigationResult(INTENSITY_KEY, initialIntensity)
-            setNavigationResult(CLOSE_FILTER_INTENSITY_DIALOG_KEY, true)
+            setFragmentResult(
+                CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY,
+                bundleOf(CLOSE_FILTER_INTENSITY_DIALOG_RESULT_KEY to true)
+            )
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         binding.apply.setOnClickListener {
@@ -96,6 +101,7 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val INTENSITY_KEY = "IntensityKey"
-        const val CLOSE_FILTER_INTENSITY_DIALOG_KEY = "OnBackPressedKey"
+        const val CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY = "CloseFilterIntensityDialogRequestKey"
+        const val CLOSE_FILTER_INTENSITY_DIALOG_RESULT_KEY = "CloseFilterIntensityDialogResultKey"
     }
 }
