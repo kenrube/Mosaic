@@ -13,8 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -22,13 +22,14 @@ import androidx.navigation.fragment.findNavController
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.data.supportedMimeTypes
 import com.kenrube.mosaic.databinding.FragmentPhotoListBinding
+import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment.Companion.USER_AGREED_TO_OPEN_SETTINGS_REQUEST_KEY
+import com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment.Companion.USER_AGREED_TO_OPEN_SETTINGS_RESULT_KEY
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoListAdapter
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.UiModel
 import com.kenrube.mosaic.presentation.permissions.PermissionStatus
-import com.kenrube.mosaic.utils.dpToPx
-import com.kenrube.mosaic.utils.openAppSystemSettings
 import com.kenrube.mosaic.presentation.features.photo_list.adapter.PhotoItemDecoration
-import com.kenrube.mosaic.utils.getNavigationResult
+import com.kenrube.mosaic.presentation.model.UiPhoto
+import com.kenrube.mosaic.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -52,8 +53,9 @@ class PhotoListFragment : Fragment() {
             uri?.let { navigateToPhoto(null, it) }
         }
 
-    private val closeStoragePermissionDialogObserver = Observer<Boolean> { isClosed ->
-        if (isClosed) {
+    private val userAgreedToOpenSettingsResultListener = FragmentResultListener { _, bundle ->
+        val isUserAgreed = bundle.getBoolean(USER_AGREED_TO_OPEN_SETTINGS_RESULT_KEY)
+        if (isUserAgreed) {
             requireContext().openAppSystemSettings()
         }
     }
@@ -72,12 +74,6 @@ class PhotoListFragment : Fragment() {
 
         setupUI()
         observeViewState()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        getNavigationResult<Boolean>(StoragePermissionDialogFragment.CLOSE_STORAGE_PERMISSION_DIALOG_KEY)!!
-            .observe(viewLifecycleOwner, closeStoragePermissionDialogObserver)
     }
 
     override fun onResume() {
@@ -127,20 +123,7 @@ class PhotoListFragment : Fragment() {
                 binding.photosAccessWarning.isVisible = it.showingPermissionWarning
                 binding.photoList.apply {
                     isVisible = it.photos.isNotEmpty()
-
-                    val list = arrayListOf<UiModel>()
-                    if (it.photos.isNotEmpty()) {
-                        list.add(UiModel.ActionUiModel(
-                            -1,
-                            R.drawable.ic_collections_24,
-                            R.string.photos_open_photos_action,
-                            Intent.ACTION_OPEN_DOCUMENT
-                        ))
-                        list.addAll(it.photos.map {
-                                photo -> UiModel.PhotoUiModel(photo.id, photo.uri)
-                        })
-                    }
-                    (adapter as PhotoListAdapter).submitList(list)
+                    (adapter as PhotoListAdapter).submitList(getItemListForAdapter(it.photos))
                 }
 
                 // Hide dialog (if it's still shown) when we granted Storage permission via
@@ -152,6 +135,22 @@ class PhotoListFragment : Fragment() {
         }
     }
 
+    private fun getItemListForAdapter(photos: List<UiPhoto>): List<UiModel> {
+        val list = arrayListOf<UiModel>()
+        if (photos.isNotEmpty()) {
+            list.add(UiModel.ActionUiModel(
+                -1,
+                R.drawable.ic_collections_24,
+                R.string.photos_open_photos_action,
+                Intent.ACTION_OPEN_DOCUMENT
+            ))
+            list.addAll(photos.map {
+                    photo -> UiModel.PhotoUiModel(photo.id, photo.uri)
+            })
+        }
+        return list
+    }
+
     private fun resolveStoragePermissionStatus(isGranted: Boolean) {
         viewModel.storagePermissionStatus = if (isGranted)
             PermissionStatus.PermissionGranted
@@ -160,6 +159,12 @@ class PhotoListFragment : Fragment() {
     }
 
     private fun openPhotoAccessRationaleDialog() {
+        parentFragmentManager.setFragmentResultListener(
+            USER_AGREED_TO_OPEN_SETTINGS_REQUEST_KEY,
+            viewLifecycleOwner,
+            userAgreedToOpenSettingsResultListener
+        )
+
         navController.navigate(PhotoListFragmentDirections.openStoragePermissionDialogAction())
     }
 
