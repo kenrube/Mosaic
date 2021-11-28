@@ -49,10 +49,8 @@ class PhotoListViewModel @Inject constructor(
     }
 
     private fun loadPhotos() {
-        viewModelScope.launch {
-            val photos = withContext(dispatchersProvider.io()) {
-                getPhotos().map { uiPhotoMapper.mapToView(it) }
-            }
+        viewModelScope.launch(dispatchersProvider.io()) {
+            val photos = getPhotos().map { uiPhotoMapper.mapToView(it) }
 
             _state.value = state.value.copy(
                 loading = false,

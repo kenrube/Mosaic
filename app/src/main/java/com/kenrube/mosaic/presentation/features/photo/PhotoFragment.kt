@@ -1,21 +1,17 @@
 package com.kenrube.mosaic.presentation.features.photo
 
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import androidx.transition.TransitionInflater
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.FragmentPhotoBinding
 import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.INTENSITY_KEY
@@ -82,31 +78,6 @@ class PhotoFragment : Fragment() {
     private fun setupUI() {
         val photoUri = args.photoUri
         binding.photo.transitionName = photoUri.toString()
-        GlideApp.with(this)
-            .load(photoUri)
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    startPostponedEnterTransition()
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    startPostponedEnterTransition()
-                    return false
-                }
-            })
-            .into(binding.photo)
 
         setupRecyclerView()
         binding.close.setOnClickListener {
@@ -118,6 +89,9 @@ class PhotoFragment : Fragment() {
         binding.save.setOnClickListener {
             // todo save image
         }
+
+        binding.photo.setImage(photoUri.toFile())
+        startPostponedEnterTransition()
     }
 
     private fun setupRecyclerView() {

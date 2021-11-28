@@ -5,12 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <com.kenrube.mosaic.opengl.ShaderView
         android:id="@+id/photo"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:contentDescription="@null" />
+        android:layout_gravity="center" />
 
     <RelativeLayout
         android:id="@+id/actions"
