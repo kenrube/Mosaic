@@ -1,5 +1,7 @@
 package com.kenrube.mosaic.di
 
+import com.kenrube.mosaic.data.resource.ResourceShaderRepository
+import com.kenrube.mosaic.data.resource.ShaderRepository
 import com.kenrube.mosaic.utils.CoroutineDispatchersProvider
 import com.kenrube.mosaic.utils.DispatchersProvider
 import dagger.Binds
@@ -13,4 +15,7 @@ interface SingletonModule {
 
     @Binds
     fun bindDispatchersProvider(dispatchersProvider: CoroutineDispatchersProvider): DispatchersProvider
+
+    @Binds
+    fun bindShaderRepository(repository: ResourceShaderRepository): ShaderRepository
 }

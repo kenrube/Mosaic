@@ -15,6 +15,9 @@
             android:id="@+id/openStoragePermissionDialogAction"
             app:destination="@id/storagePermissionDialog" />
     </fragment>
+    <dialog
+        android:id="@+id/storagePermissionDialog"
+        android:name="com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment" />
     <fragment
         android:id="@+id/photoFragment"
         android:name="com.kenrube.mosaic.presentation.features.photo.PhotoFragment"
@@ -36,7 +39,4 @@
             app:argType="integer"
             app:nullable="false" />
     </dialog>
-    <dialog
-        android:id="@+id/storagePermissionDialog"
-        android:name="com.kenrube.mosaic.presentation.features.photo_list.StoragePermissionDialogFragment" />
 </navigation>
