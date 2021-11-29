@@ -14,6 +14,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.FragmentPhotoBinding
+import com.kenrube.mosaic.domain.model.FilterType
 import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.INTENSITY_KEY
 import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY
 import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.CLOSE_FILTER_INTENSITY_DIALOG_RESULT_KEY
@@ -37,7 +38,8 @@ class PhotoFragment : Fragment() {
     }
 
     private val intensityObserver = Observer<Int> { intensity ->
-        // todo apply filter with intensity
+        binding.photo.filter.adjust(intensity)
+        binding.photo.requestRender()
     }
 
     private val closeFilterIntensityDialogResultListener = FragmentResultListener { _, bundle ->
@@ -98,9 +100,10 @@ class PhotoFragment : Fragment() {
         binding.filterList.apply {
             setHasFixedSize(true)
             addItemDecoration(FilterItemDecoration(context.dpToPx(16), context.dpToPx(6)))
-            adapter = FilterListAdapter { item, isFirstClick ->
+            adapter = FilterListAdapter { filter, isFirstClick ->
                 if (isFirstClick) {
-                    // todo apply filter with default intensity
+                    binding.photo.filterType = filter.id
+                    binding.photo.requestRender()
                 } else {
                     hideViews()
                     openFilterIntensityDialog()
@@ -108,10 +111,10 @@ class PhotoFragment : Fragment() {
             }
             (adapter as FilterListAdapter).submitList(
                 listOf(
-                    UiFilter(0, Uri.EMPTY, getString(R.string.filter_pixelation)),
-                    UiFilter(1, Uri.EMPTY, getString(R.string.filter_saturation)),
-                    UiFilter(2, Uri.EMPTY, getString(R.string.filter_solarize)),
-                    UiFilter(3, Uri.EMPTY, getString(R.string.filter_swirl)),
+                    UiFilter(FilterType.PIXELATION, Uri.EMPTY, getString(R.string.filter_pixelation)),
+                    UiFilter(FilterType.SATURATION, Uri.EMPTY, getString(R.string.filter_saturation)),
+                    UiFilter(FilterType.SOLARIZE, Uri.EMPTY, getString(R.string.filter_solarize)),
+                    UiFilter(FilterType.SWIRL, Uri.EMPTY, getString(R.string.filter_swirl)),
                 )
             )
         }
@@ -152,7 +155,8 @@ class PhotoFragment : Fragment() {
             closeFilterIntensityDialogResultListener
         )
 
-        val action = PhotoFragmentDirections.openFilterIntensityDialogAction(20)
+        val action =
+            PhotoFragmentDirections.openFilterIntensityDialogAction(100 /* percent */)
         navController.navigate(action)
     }
 }

@@ -4,8 +4,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import androidx.core.graphics.*
+import com.kenrube.mosaic.opengl.filter.ShaderFilter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.max
@@ -25,20 +28,15 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
             it.put(TEXTURE).position(0)
         }
 
-    private var imageWidth = -1
-    private var imageHeight = -1
-
-    var frameWidth: Int = -1
-        private set
-    var frameHeight: Int = -1
-        private set
-
-    init {
-        adjustImageScaling()
-    }
+    private val runOnDraw = LinkedList<Runnable>()
+    private var imageWidth = 0
+    private var imageHeight = 0
+    private var frameWidth = 0
+    private var frameHeight = 0
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        GLES20.glClearColor(0f, 0f, 0f, 1f)
+        val c = "#212121".toColorInt() // Theme.App->android:windowBackground
+        GLES20.glClearColor(c.red / 255f, c.green / 255f, c.blue / 255f, 1f)
         GLES20.glDisable(GLES20.GL_DEPTH_TEST)
         filter.initIfNecessary()
     }
@@ -54,43 +52,53 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
 
     override fun onDrawFrame(gl: GL10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+        runPendingOnDrawTasks(runOnDraw)
         filter.onDraw(glTextureId, glCubeBuffer, glTextureBuffer)
     }
 
     fun setFilter(filter: ShaderFilter) {
-        val oldFilter = filter
-        this.filter = filter
-        oldFilter.destroy()
-        this.filter.initIfNecessary()
-        GLES20.glUseProgram(this.filter.program)
-        this.filter.onOutputSizeChanged(frameWidth, frameHeight)
+        runOnDraw {
+            val oldFilter = filter
+            this.filter = filter
+            oldFilter.destroy()
+            this.filter.initIfNecessary()
+            GLES20.glUseProgram(this.filter.program)
+            this.filter.onOutputSizeChanged(frameWidth, frameHeight)
+        }
     }
 
     fun setImageBitmap(bitmap: Bitmap, recycle: Boolean = true) {
-        var resizedBitmap: Bitmap? = null
-        if (bitmap.width % 2 == 1) {
-            resizedBitmap = Bitmap.createBitmap(
-                bitmap.width + 1, bitmap.height,
-                Bitmap.Config.ARGB_8888
-            )
-            resizedBitmap.density = bitmap.density
-            val can = Canvas(resizedBitmap)
-            can.drawARGB(0x00, 0x00, 0x00, 0x00)
-            can.drawBitmap(bitmap, 0f, 0f, null)
+        runOnDraw {
+            var resizedBitmap: Bitmap? = null
+            if (bitmap.width % 2 == 1) {
+                resizedBitmap = Bitmap.createBitmap(
+                    bitmap.width + 1, bitmap.height,
+                    Bitmap.Config.ARGB_8888
+                )
+                resizedBitmap.density = bitmap.density
+                val can = Canvas(resizedBitmap)
+                can.drawARGB(0x00, 0x00, 0x00, 0x00)
+                can.drawBitmap(bitmap, 0f, 0f, null)
+            }
+            glTextureId = loadTexture(resizedBitmap ?: bitmap, glTextureId, recycle)
+            resizedBitmap?.recycle()
+            imageWidth = bitmap.width
+            imageHeight = bitmap.height
+            adjustImageScaling()
         }
-        glTextureId = loadTexture(resizedBitmap ?: bitmap, glTextureId, recycle)
-        resizedBitmap?.recycle()
-        imageWidth = bitmap.width
-        imageHeight = bitmap.height
-        adjustImageScaling()
     }
 
     fun deleteImage() {
-        GLES20.glDeleteTextures(1, intArrayOf(glTextureId), 0)
-        glTextureId = NO_TEXTURE
+        runOnDraw {
+            GLES20.glDeleteTextures(1, intArrayOf(glTextureId), 0)
+            glTextureId = NO_TEXTURE
+        }
     }
 
     private fun adjustImageScaling() {
+        if (frameWidth == 0 || frameHeight == 0 || imageWidth == 0 || imageHeight == 0) {
+            return
+        }
         val outputWidth = frameWidth.toFloat()
         val outputHeight = frameHeight.toFloat()
         val ratio1 = outputWidth / imageWidth
@@ -110,6 +118,20 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
         glCubeBuffer.put(cube).position(0)
         glTextureBuffer.clear()
         glTextureBuffer.put(TEXTURE).position(0)
+    }
+
+    private fun runOnDraw(runnable: Runnable) {
+        synchronized(runOnDraw) {
+            runOnDraw.add(runnable)
+        }
+    }
+
+    private fun runPendingOnDrawTasks(tasks: LinkedList<Runnable>) {
+        synchronized(tasks) {
+            while (!tasks.isEmpty()) {
+                tasks.removeFirst().run()
+            }
+        }
     }
 
     companion object {

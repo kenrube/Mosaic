@@ -9,11 +9,11 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.content.getSystemService
 import androidx.exifinterface.media.ExifInterface
-import androidx.lifecycle.findViewTreeLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import com.kenrube.mosaic.R
+import androidx.lifecycle.*
+import com.kenrube.mosaic.data.resource.ShaderRepository
+import com.kenrube.mosaic.domain.model.FilterType
+import com.kenrube.mosaic.opengl.filter.*
 import com.kenrube.mosaic.utils.DispatchersProvider
-import com.kenrube.mosaic.utils.getRawFile
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -29,6 +29,9 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     @Inject
     lateinit var dispatchersProvider: DispatchersProvider
 
+    @Inject
+    lateinit var shaderRepository: ShaderRepository
+
     private val surfaceView = GLSurfaceView(context, attrs).apply {
         setEGLContextClientVersion(2)
         setEGLConfigChooser(8, 8, 8, 8, 16, 0)
@@ -36,12 +39,26 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     var filter = ShaderFilter(
-        context.getRawFile(R.raw.vertex_default),
-        context.getRawFile(R.raw.fragment_default)
+        shaderRepository.getShader(FilterType.NONE).vertexShader,
+        shaderRepository.getShader(FilterType.NONE).fragmentShader
     )
-        set(filter) {
+        private set(filter) {
             field = filter
-            surfaceView.queueEvent { renderer.setFilter(filter) }
+            renderer.setFilter(filter)
+            surfaceView.requestRender()
+        }
+
+    var filterType: FilterType = FilterType.NONE
+        set(filterType) {
+            field = filterType
+            val shader = shaderRepository.getShader(filterType)
+            filter = when (filterType) {
+                FilterType.NONE -> ShaderFilter(shader.vertexShader, shader.fragmentShader)
+                FilterType.PIXELATION -> PixelationFilter(shader.vertexShader, shader.fragmentShader)
+                FilterType.SATURATION -> SaturationFilter(shader.vertexShader, shader.fragmentShader)
+                FilterType.SOLARIZE -> SolarizeFilter(shader.vertexShader, shader.fragmentShader)
+                FilterType.SWIRL -> SwirlFilter(shader.vertexShader, shader.fragmentShader)
+            }
         }
 
     private val renderer = ShaderRenderer(filter).also {
@@ -58,6 +75,10 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         addView(surfaceView)
     }
 
+    fun requestRender() {
+        surfaceView.requestRender()
+    }
+
     fun setImage(file: File) = launchOnIO {
         val bitmap = ImageLoader(file.absolutePath).load()
         deleteImage()
@@ -66,12 +87,12 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private fun setImage(bitmap: Bitmap) {
         currentBitmap = bitmap
-        surfaceView.queueEvent { renderer.setImageBitmap(bitmap, false) }
+        renderer.setImageBitmap(bitmap, false)
         surfaceView.requestRender()
     }
 
     private fun deleteImage() {
-        surfaceView.queueEvent { renderer.deleteImage() }
+        renderer.deleteImage()
         currentBitmap = null
         surfaceView.requestRender()
     }
