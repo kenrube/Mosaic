@@ -18,11 +18,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.FragmentPhotoBinding
 import com.kenrube.mosaic.domain.model.FilterType
-import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.INTENSITY_KEY
 import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY
 import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.CLOSE_FILTER_INTENSITY_DIALOG_RESULT_KEY
-import com.kenrube.mosaic.presentation.features.photo.adapter.FilterListAdapter
+import com.kenrube.mosaic.presentation.features.photo.FilterIntensityBottomSheet.Companion.INTENSITY_KEY
 import com.kenrube.mosaic.presentation.features.photo.adapter.FilterItemDecoration
+import com.kenrube.mosaic.presentation.features.photo.adapter.FilterListAdapter
 import com.kenrube.mosaic.presentation.features.photo.adapter.UiFilter
 import com.kenrube.mosaic.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -104,7 +104,11 @@ class PhotoFragment : Fragment() {
             navController.navigateUp()
         }
         binding.share.setOnClickListener {
-            // todo share image
+            lifecycleScope.launch {
+                binding.photo.captureImage { bitmap ->
+                    viewModel.onEvent(PhotoEvent.SaveTempPhoto(bitmap))
+                }
+            }
         }
         binding.save.setOnClickListener {
             lifecycleScope.launch {
@@ -123,18 +127,31 @@ class PhotoFragment : Fragment() {
     private fun observeViewState() {
         lifecycleScope.launchWhenStarted {
             viewModel.state.collect {
+                // These events are independent so we can process them consequentially
+
                 val photoUri: Uri? = it.photoStored?.getContentIfNotHandled()
                 photoUri?.run {
                     val message = getString(R.string.photo_saved_message, getString(R.string.app_name))
                     val action = getString(R.string.photo_open_saved_action)
                     Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
-                        .setAction(action) { requireContext().openActivityForUri(photoUri) }
+                        .setAction(action) { requireContext().openImageForViewing(photoUri) }
                         .show()
                 }
 
                 val photoNotStored: Boolean = it.photoNotStored?.getContentIfNotHandled() == Unit
                 if (photoNotStored) {
                     val message = getString(R.string.photo_not_saved_message)
+                    Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                }
+
+                val tempPhotoUri: Uri? = it.tempPhotoStored?.getContentIfNotHandled()
+                tempPhotoUri?.run {
+                    requireContext().shareImage(this)
+                }
+
+                val tempPhotoNotStored: Boolean = it.tempPhotoNotStored?.getContentIfNotHandled() == Unit
+                if (tempPhotoNotStored) {
+                    val message = getString(R.string.photo_temp_not_saved_message)
                     Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
                 }
             }

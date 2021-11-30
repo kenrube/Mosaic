@@ -8,4 +8,6 @@ interface PhotoRepository {
     suspend fun getPhotos(): List<Photo>
 
     suspend fun savePhoto(bitmap: Bitmap): Uri
+
+    suspend fun savePhotoToCache(bitmap: Bitmap): Uri
 }
