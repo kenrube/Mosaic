@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.viewModels
@@ -119,7 +118,7 @@ class PhotoFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            binding.photo.setImage(photoUri.toFile())
+            binding.photo.setImage(photoUri)
             startPostponedEnterTransition()
         }
     }

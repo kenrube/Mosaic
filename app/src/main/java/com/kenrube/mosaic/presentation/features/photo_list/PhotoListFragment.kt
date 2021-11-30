@@ -142,9 +142,7 @@ class PhotoListFragment : Fragment() {
                 R.string.photos_open_photos_action,
                 Intent.ACTION_OPEN_DOCUMENT
             ))
-            list.addAll(photos.map {
-                    photo -> UiModel.PhotoUiModel(photo.id, photo.uri)
-            })
+            list.addAll(photos.map { photo -> UiModel.PhotoUiModel(photo.id, photo.uri) })
         }
         return list
     }

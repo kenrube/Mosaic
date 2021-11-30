@@ -1,10 +1,12 @@
 package com.kenrube.mosaic.opengl
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.PixelFormat
+import android.net.Uri
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.WindowManager
@@ -17,7 +19,6 @@ import com.kenrube.mosaic.opengl.filter.*
 import com.kenrube.mosaic.utils.coroutine.DispatchersProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.withContext
-import java.io.*
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -79,8 +80,13 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         surfaceView.requestRender()
     }
 
-    suspend fun setImage(file: File) = withContext(dispatchersProvider.io()) {
-        val bitmap = ImageLoader(file.absolutePath).load()
+    suspend fun setImage(uri: Uri) = withContext(dispatchersProvider.io()) {
+        val bitmap = when (uri.scheme) {
+            ContentResolver.SCHEME_FILE -> FileImageLoader(uri).load()
+            ContentResolver.SCHEME_CONTENT -> ContentImageLoader(uri).load()
+            else -> throw IllegalArgumentException("Unsupported URI scheme: ${uri.scheme}. " +
+                    "Should be 'file' or 'content'")
+        }
         deleteImage()
         setImage(bitmap)
     }
@@ -105,33 +111,58 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         surfaceView.requestRender()
     }
 
+    private inner class FileImageLoader(uri: Uri) : ImageLoader() {
+        private val imagePath = uri.path!!
+
+        override fun decodeBitmap(options: BitmapFactory.Options?): Bitmap? =
+            BitmapFactory.decodeFile(imagePath, options)
+
+        override fun getImageRotationDegrees(): Int =
+            ExifInterface(imagePath).rotationDegrees
+    }
+
+    private inner class ContentImageLoader(uri: Uri) : ImageLoader() {
+        private val pfd = context.contentResolver.openFileDescriptor(uri, "r")!!
+
+        override fun decodeBitmap(options: BitmapFactory.Options?): Bitmap? {
+            // Unexpectedly, BitmapFactory#decodeStream and BitmapFactory#decodeByteArray couldn't
+            // decode bitmap; message in Logcat (w/o detailed stacktrace):
+            // 'D/skia: --- Failed to create image decoder with message 'unimplemented''
+            return BitmapFactory.decodeFileDescriptor(pfd.fileDescriptor)
+        }
+
+        override fun getImageRotationDegrees(): Int =
+            pfd.use { ExifInterface(it.fileDescriptor).rotationDegrees }
+    }
+
     @Suppress("DEPRECATION") // To ignore deprecations of WindowManager's methods
-    private inner class ImageLoader(private val imagePath: String) {
+    private abstract inner class ImageLoader {
         private val outputWidth = context.getSystemService<WindowManager>()!!.defaultDisplay.width
         // Approximate height because here GLSurfaceView doesn't measured its height yet
         private val outputHeight = context.getSystemService<WindowManager>()!!.defaultDisplay.height
 
+        abstract fun decodeBitmap(options: BitmapFactory.Options? = null): Bitmap?
+
+        abstract fun getImageRotationDegrees(): Int
+
         fun load(): Bitmap {
             var options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            decode(options)
+            decodeBitmap(options)
 
             val ratio1 = options.outWidth / outputWidth
             val ratio2 = options.outHeight / outputHeight
             val ratioMax = max(ratio1, ratio2)
 
             options = BitmapFactory.Options().apply { inSampleSize = ratioMax }
-            var bitmap = decode(options)!!
+            var bitmap = decodeBitmap(options)!!
             bitmap = rotateImage(bitmap)
             bitmap = scaleBitmap(bitmap)
             return bitmap
         }
 
-        private fun decode(options: BitmapFactory.Options? = null): Bitmap? =
-            BitmapFactory.decodeFile(imagePath, options)
-
         private fun rotateImage(bitmap: Bitmap): Bitmap {
             var rotatedBitmap = bitmap
-            val orientation = ExifInterface(imagePath).rotationDegrees
+            val orientation = getImageRotationDegrees()
             if (orientation != 0) {
                 val matrix = Matrix().apply { postRotate(orientation.toFloat()) }
                 rotatedBitmap =
