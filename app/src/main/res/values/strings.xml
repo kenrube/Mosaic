@@ -19,6 +19,9 @@
     <string name="photo_close_content_description">Close photo screen</string>
     <string name="photo_share_content_description">Share photo</string>
     <string name="photo_save">Save</string>
+    <string name="photo_saved_message">Artwork saved to %s folder</string>
+    <string name="photo_open_saved_action">Open</string>
+    <string name="photo_not_saved_message">Artwork was not saved</string>
 
     <string name="filter_pixelation">Pixelation</string>
     <string name="filter_saturation">Saturation</string>

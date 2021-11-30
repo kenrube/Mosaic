@@ -1,4 +1,4 @@
-package com.kenrube.mosaic.utils
+package com.kenrube.mosaic.utils.coroutine
 
 import javax.inject.Inject
 

@@ -8,6 +8,7 @@ import androidx.core.graphics.*
 import com.kenrube.mosaic.opengl.filter.ShaderFilter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.IntBuffer
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -29,6 +30,7 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
         }
 
     private val runOnDraw = LinkedList<Runnable>()
+    private val runOnDrawEnd = LinkedList<Runnable>()
     private var imageWidth = 0
     private var imageHeight = 0
     private var frameWidth = 0
@@ -50,10 +52,11 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
         adjustImageScaling()
     }
 
-    override fun onDrawFrame(gl: GL10) {
+    override fun onDrawFrame(gl: GL10?) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
         runPendingOnDrawTasks(runOnDraw)
         filter.onDraw(glTextureId, glCubeBuffer, glTextureBuffer)
+        runPendingOnDrawTasks(runOnDrawEnd)
     }
 
     fun setFilter(filter: ShaderFilter) {
@@ -95,6 +98,36 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
         }
     }
 
+    fun captureBitmap(onComplete: (Bitmap) -> Unit) {
+        runOnDrawEnd {
+            val inputBuffer = IntBuffer.allocate(imageWidth * imageHeight)
+            val outputBuffer = IntBuffer.allocate(imageWidth * imageHeight)
+
+            val x = (frameWidth - imageWidth) / 2
+            val y = (frameHeight - imageHeight) / 2
+
+            GLES20.glReadPixels(
+                x, y, imageWidth, imageHeight, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, inputBuffer
+            )
+
+            // Convert upside down mirror-reversed image to right-side up normal image
+            for (i in 0 until imageHeight) {
+                for (j in 0 until imageWidth) {
+                    outputBuffer.put(
+                        (imageHeight - i - 1) * imageWidth + j,
+                        inputBuffer[i * imageWidth + j]
+                    )
+                }
+            }
+
+            val bitmap =
+                Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888).apply {
+                    copyPixelsFromBuffer(outputBuffer)
+                }
+            onComplete.invoke(bitmap)
+        }
+    }
+
     private fun adjustImageScaling() {
         if (frameWidth == 0 || frameHeight == 0 || imageWidth == 0 || imageHeight == 0) {
             return
@@ -123,6 +156,12 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
     private fun runOnDraw(runnable: Runnable) {
         synchronized(runOnDraw) {
             runOnDraw.add(runnable)
+        }
+    }
+
+    private fun runOnDrawEnd(runnable: Runnable) {
+        synchronized(runOnDrawEnd) {
+            runOnDrawEnd.add(runnable)
         }
     }
 

@@ -18,3 +18,11 @@ fun Context.openAppSystemSettings() {
         addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
     })
 }
+
+fun Context.openActivityForUri(uri: Uri) {
+    startActivity(Intent().apply {
+        action = Intent.ACTION_VIEW
+        data = uri
+        addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+    })
+}

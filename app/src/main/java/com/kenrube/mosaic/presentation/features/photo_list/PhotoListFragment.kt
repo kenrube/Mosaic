@@ -71,14 +71,12 @@ class PhotoListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupUI()
         observeViewState()
     }
 
     override fun onResume() {
         super.onResume()
-
         val isStoragePermissionGranted = checkSelfPermission(
             requireContext(),
             READ_EXTERNAL_STORAGE

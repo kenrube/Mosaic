@@ -1,23 +1,23 @@
 package com.kenrube.mosaic.opengl
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.graphics.PixelFormat
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
-import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.content.getSystemService
 import androidx.exifinterface.media.ExifInterface
-import androidx.lifecycle.*
 import com.kenrube.mosaic.data.resource.ShaderRepository
 import com.kenrube.mosaic.domain.model.FilterType
 import com.kenrube.mosaic.opengl.filter.*
-import com.kenrube.mosaic.utils.DispatchersProvider
+import com.kenrube.mosaic.utils.coroutine.DispatchersProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import java.io.File
+import kotlinx.coroutines.withContext
+import java.io.*
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -79,7 +79,7 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         surfaceView.requestRender()
     }
 
-    fun setImage(file: File) = launchOnIO {
+    suspend fun setImage(file: File) = withContext(dispatchersProvider.io()) {
         val bitmap = ImageLoader(file.absolutePath).load()
         deleteImage()
         setImage(bitmap)
@@ -97,14 +97,18 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         surfaceView.requestRender()
     }
 
-    private fun View.launchOnIO(block: suspend CoroutineScope.() -> Unit) {
-        findViewTreeLifecycleOwner()?.lifecycleScope?.launch(dispatchersProvider.io(), block = block)
+    // TODO: Rewrite it w/o ton of callbacks
+    suspend fun captureImage(onComplete: (Bitmap) -> Unit) = withContext(dispatchersProvider.io()) {
+        renderer.captureBitmap { bitmap ->
+            onComplete.invoke(bitmap)
+        }
+        surfaceView.requestRender()
     }
 
     @Suppress("DEPRECATION") // To ignore deprecations of WindowManager's methods
     private inner class ImageLoader(private val imagePath: String) {
         private val outputWidth = context.getSystemService<WindowManager>()!!.defaultDisplay.width
-        // Approximate height because here GLSurfaceView doesn't measured height yet
+        // Approximate height because here GLSurfaceView doesn't measured its height yet
         private val outputHeight = context.getSystemService<WindowManager>()!!.defaultDisplay.height
 
         fun load(): Bitmap {
@@ -142,7 +146,7 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             val height = bitmap.height
             val (newWidth, newHeight) = getScaleSize(width, height)
             val workBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-            if (workBitmap != bitmap) {
+            if (!workBitmap.sameAs(bitmap)) {
                 bitmap.recycle()
                 return workBitmap
             }
