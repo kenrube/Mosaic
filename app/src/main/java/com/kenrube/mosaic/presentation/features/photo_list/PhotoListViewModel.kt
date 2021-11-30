@@ -5,12 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.kenrube.mosaic.domain.usecases.GetPhotos
 import com.kenrube.mosaic.presentation.model.mappers.UiPhotoMapper
 import com.kenrube.mosaic.presentation.permissions.PermissionStatus
-import com.kenrube.mosaic.utils.DispatchersProvider
+import com.kenrube.mosaic.utils.coroutine.DispatchersProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.properties.Delegates
 

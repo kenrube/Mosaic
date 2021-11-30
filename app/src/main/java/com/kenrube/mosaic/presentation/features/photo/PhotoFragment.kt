@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
+import com.google.android.material.snackbar.Snackbar
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.databinding.FragmentPhotoBinding
 import com.kenrube.mosaic.domain.model.FilterType
@@ -23,6 +26,8 @@ import com.kenrube.mosaic.presentation.features.photo.adapter.FilterItemDecorati
 import com.kenrube.mosaic.presentation.features.photo.adapter.UiFilter
 import com.kenrube.mosaic.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PhotoFragment : Fragment() {
@@ -30,14 +35,18 @@ class PhotoFragment : Fragment() {
     private var _binding: FragmentPhotoBinding? = null
     private val binding: FragmentPhotoBinding get() = _binding!!
 
-    private val args: PhotoFragmentArgs by navArgs()
+    private val viewModel: PhotoViewModel by viewModels()
     private val navController by lazy { findNavController() }
+    private val args: PhotoFragmentArgs by navArgs()
 
     private val animTime: Long by lazy {
         resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
     }
 
+    private var intensity: Int = 100
+
     private val intensityObserver = Observer<Int> { intensity ->
+        this.intensity = intensity
         binding.photo.filter.adjust(intensity)
         binding.photo.requestRender()
     }
@@ -54,6 +63,9 @@ class PhotoFragment : Fragment() {
         sharedElementEnterTransition = TransitionInflater.from(context)
             .inflateTransition(R.transition.shared_image)
         sharedElementReturnTransition = null
+        savedInstanceState?.run {
+            intensity = getInt(SAVED_STATE_INTENSITY_KEY)
+        }
     }
 
     override fun onCreateView(
@@ -69,12 +81,18 @@ class PhotoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
+        observeViewState()
     }
 
     override fun onStart() {
         super.onStart()
         getNavigationResultLiveData<Int>(INTENSITY_KEY)!!
             .observe(viewLifecycleOwner, intensityObserver)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(SAVED_STATE_INTENSITY_KEY, intensity)
     }
 
     private fun setupUI() {
@@ -89,11 +107,38 @@ class PhotoFragment : Fragment() {
             // todo share image
         }
         binding.save.setOnClickListener {
-            // todo save image
+            lifecycleScope.launch {
+                binding.photo.captureImage { bitmap ->
+                    viewModel.onEvent(PhotoEvent.SavePhoto(bitmap))
+                }
+            }
         }
 
-        binding.photo.setImage(photoUri.toFile())
-        startPostponedEnterTransition()
+        lifecycleScope.launch {
+            binding.photo.setImage(photoUri.toFile())
+            startPostponedEnterTransition()
+        }
+    }
+
+    private fun observeViewState() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.state.collect {
+                val photoUri: Uri? = it.photoStored?.getContentIfNotHandled()
+                photoUri?.run {
+                    val message = getString(R.string.photo_saved_message, getString(R.string.app_name))
+                    val action = getString(R.string.photo_open_saved_action)
+                    Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+                        .setAction(action) { requireContext().openActivityForUri(photoUri) }
+                        .show()
+                }
+
+                val photoNotStored: Boolean = it.photoNotStored?.getContentIfNotHandled() == Unit
+                if (photoNotStored) {
+                    val message = getString(R.string.photo_not_saved_message)
+                    Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -155,8 +200,11 @@ class PhotoFragment : Fragment() {
             closeFilterIntensityDialogResultListener
         )
 
-        val action =
-            PhotoFragmentDirections.openFilterIntensityDialogAction(100 /* percent */)
+        val action = PhotoFragmentDirections.openFilterIntensityDialogAction(intensity)
         navController.navigate(action)
+    }
+
+    companion object {
+        private const val SAVED_STATE_INTENSITY_KEY = "SavedStateIntensityKey"
     }
 }

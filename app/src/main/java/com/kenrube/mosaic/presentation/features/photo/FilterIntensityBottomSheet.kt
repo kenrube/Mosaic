@@ -63,6 +63,11 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         binding.apply.setOnClickListener {
+            setNavigationResult(INTENSITY_KEY, binding.intensitySlider.progress)
+            setFragmentResult(
+                CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY,
+                bundleOf(CLOSE_FILTER_INTENSITY_DIALOG_RESULT_KEY to true)
+            )
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         binding.intensitySlider.onProgressChanged { intensity ->

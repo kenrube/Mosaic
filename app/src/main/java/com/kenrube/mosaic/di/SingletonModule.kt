@@ -2,8 +2,8 @@ package com.kenrube.mosaic.di
 
 import com.kenrube.mosaic.data.resource.ResourceShaderRepository
 import com.kenrube.mosaic.data.resource.ShaderRepository
-import com.kenrube.mosaic.utils.CoroutineDispatchersProvider
-import com.kenrube.mosaic.utils.DispatchersProvider
+import com.kenrube.mosaic.utils.coroutine.CoroutineDispatchersProvider
+import com.kenrube.mosaic.utils.coroutine.DispatchersProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
