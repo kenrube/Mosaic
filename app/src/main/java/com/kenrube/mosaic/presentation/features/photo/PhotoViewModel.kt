@@ -25,6 +25,7 @@ class PhotoViewModel @Inject constructor(
     fun onEvent(event: PhotoEvent) {
         when (event) {
             is PhotoEvent.SavePhoto -> savePhoto(event.bitmap)
+            is PhotoEvent.SaveTempPhoto -> saveTempPhoto(event.bitmap)
         }
     }
 
@@ -38,6 +39,21 @@ class PhotoViewModel @Inject constructor(
             } catch (e: IOException) {
                 _state.value = state.value.copy(
                     photoNotStored = Event(Unit)
+                )
+            }
+        }
+    }
+
+    private fun saveTempPhoto(bitmap: Bitmap) {
+        viewModelScope.launch(dispatchersProvider.io()) {
+            try {
+                val photoUri = photoRepository.savePhotoToCache(bitmap)
+                _state.value = state.value.copy(
+                    tempPhotoStored = Event(photoUri)
+                )
+            } catch (e: IOException) {
+                _state.value = state.value.copy(
+                    tempPhotoNotStored = Event(Unit)
                 )
             }
         }

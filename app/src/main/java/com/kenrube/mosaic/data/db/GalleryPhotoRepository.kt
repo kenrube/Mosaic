@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.kenrube.mosaic.R
 import com.kenrube.mosaic.data.supportedMimeTypes
@@ -21,7 +22,6 @@ import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 class GalleryPhotoRepository @Inject constructor(
     @ApplicationContext private val context: Context
@@ -63,7 +63,7 @@ class GalleryPhotoRepository @Inject constructor(
         val folderName = context.getString(R.string.app_name)
         val fileName = "IMG_${dateFormat.format(Date())}"
 
-        val fos: OutputStream?
+        val stream: OutputStream?
         val imageUri: Uri?
         var imageFile: File? = null
 
@@ -81,7 +81,7 @@ class GalleryPhotoRepository @Inject constructor(
             if (imageUri == null) {
                 throw IOException("Failed to create new MediaStore record")
             }
-            fos = resolver.openOutputStream(imageUri)
+            stream = resolver.openOutputStream(imageUri)
         } else {
             @Suppress("DEPRECATION")
             val picturesDirectory = Environment
@@ -93,13 +93,12 @@ class GalleryPhotoRepository @Inject constructor(
             }
             imageFile = File(imagesDir, "$fileName.jpg")
             imageUri = imageFile.toUri()
-            fos = FileOutputStream(imageFile)
+            stream = FileOutputStream(imageFile)
         }
-        fos.use {
+        stream.use {
             if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)) {
                 throw IOException("Failed to save bitmap")
             }
-            it?.flush()
         }
 
         imageFile?.run { // before Android Q
@@ -108,6 +107,25 @@ class GalleryPhotoRepository @Inject constructor(
         }
 
         return imageUri
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    @Throws(IOException::class)
+    override suspend fun savePhotoToCache(bitmap: Bitmap): Uri {
+        val cacheDir = File(context.cacheDir, "images")
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs()
+        }
+
+        val file = File(cacheDir, "shareable_image.jpg")
+        FileOutputStream(file).use {
+            if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)) {
+                throw IOException("Failed to save bitmap")
+            }
+        }
+
+        val authority = context.getString(R.string.fileprovider_authority)
+        return FileProvider.getUriForFile(context, authority, file)
     }
 
     companion object {
