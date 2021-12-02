@@ -42,7 +42,7 @@ class PhotoFragment : Fragment() {
         resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
     }
 
-    private var intensity: Int = 100
+    private var intensity: Int = FilterType.NONE.defaultIntensity
 
     private val intensityObserver = Observer<Int> { intensity ->
         this.intensity = intensity
@@ -165,11 +165,12 @@ class PhotoFragment : Fragment() {
                 val filterType = filter.id
                 if (isFirstClick) {
                     binding.photo.filterType = filterType
+                    intensity = filterType.defaultIntensity
                     binding.photo.filter.adjust(filterType.defaultIntensity)
                     binding.photo.requestRender()
                 } else {
                     hideViews()
-                    openFilterIntensityDialog(filterType)
+                    openFilterIntensityDialog()
                 }
             }
             (adapter as FilterListAdapter).submitList(
@@ -211,14 +212,14 @@ class PhotoFragment : Fragment() {
             .start()
     }
 
-    private fun openFilterIntensityDialog(filterType: FilterType) {
+    private fun openFilterIntensityDialog() {
         parentFragmentManager.setFragmentResultListener(
             CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY,
             viewLifecycleOwner,
             closeFilterIntensityDialogResultListener
         )
 
-        val action = PhotoFragmentDirections.openFilterIntensityDialogAction(filterType.defaultIntensity)
+        val action = PhotoFragmentDirections.openFilterIntensityDialogAction(intensity)
         navController.navigate(action)
     }
 
