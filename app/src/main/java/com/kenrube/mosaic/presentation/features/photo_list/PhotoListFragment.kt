@@ -117,16 +117,18 @@ class PhotoListFragment : Fragment() {
     private fun observeViewState() {
         lifecycleScope.launchWhenStarted {
             viewModel.state.collect {
+                val photosLoaded = !it.loading && !it.showingPermissionWarning
+
                 binding.progress.isVisible = it.loading
                 binding.photosAccessWarning.isVisible = it.showingPermissionWarning
                 binding.photoList.apply {
-                    isVisible = it.photos.isNotEmpty()
+                    isVisible = photosLoaded
                     (adapter as PhotoListAdapter).submitList(getItemListForAdapter(it.photos))
                 }
 
                 // Hide dialog (if it's still shown) when we granted Storage permission via
                 // App Settings in separate window and returned back to the app
-                if (!it.loading && !it.showingPermissionWarning /* photos successfully loaded */) {
+                if (photosLoaded) {
                     navController.popBackStack(R.id.storagePermissionDialog, true)
                 }
             }
@@ -135,15 +137,13 @@ class PhotoListFragment : Fragment() {
 
     private fun getItemListForAdapter(photos: List<UiPhoto>): List<UiModel> {
         val list = arrayListOf<UiModel>()
-        if (photos.isNotEmpty()) {
-            list.add(UiModel.ActionUiModel(
-                -1,
-                R.drawable.ic_collections_24,
-                R.string.photos_open_photos_action,
-                Intent.ACTION_OPEN_DOCUMENT
-            ))
-            list.addAll(photos.map { photo -> UiModel.PhotoUiModel(photo.id, photo.uri) })
-        }
+        list.add(UiModel.ActionUiModel(
+            -1,
+            R.drawable.ic_collections_24,
+            R.string.photos_open_photos_action,
+            Intent.ACTION_OPEN_DOCUMENT
+        ))
+        list.addAll(photos.map { photo -> UiModel.PhotoUiModel(photo.id, photo.uri) })
         return list
     }
 
