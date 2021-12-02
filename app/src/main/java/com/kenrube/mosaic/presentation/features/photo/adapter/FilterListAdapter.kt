@@ -46,8 +46,8 @@ class FilterListAdapter(private val onClick: (UiFilter, Boolean) -> Unit) :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(position: Int, uiFilter: UiFilter) {
-            binding.image.setImageURI(uiFilter.image)
-            binding.title.text = uiFilter.title
+            binding.image.setImageResource(uiFilter.imageRes)
+            binding.title.setText(uiFilter.titleRes)
             binding.selected.isVisible = position == selectedItemIndex
             binding.root.setOnClickListener {
                 onClick(uiFilter, position != selectedItemIndex)

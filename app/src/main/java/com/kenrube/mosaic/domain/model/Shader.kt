@@ -5,10 +5,10 @@ data class Shader(
     val fragmentShader: String
 )
 
-enum class FilterType {
-    NONE,
-    PIXELATION,
-    SATURATION,
-    SOLARIZE,
-    SWIRL
+enum class FilterType(val defaultIntensity: Int) {
+    NONE(-1),
+    SATURATION(0 /* bw */),
+    SOLARIZE(100 /* negative */),
+    PIXELATION(15),
+    SWIRL(100)
 }
