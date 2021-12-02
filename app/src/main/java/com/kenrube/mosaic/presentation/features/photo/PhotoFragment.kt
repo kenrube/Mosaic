@@ -162,20 +162,22 @@ class PhotoFragment : Fragment() {
             setHasFixedSize(true)
             addItemDecoration(FilterItemDecoration(context.dpToPx(16), context.dpToPx(6)))
             adapter = FilterListAdapter { filter, isFirstClick ->
+                val filterType = filter.id
                 if (isFirstClick) {
-                    binding.photo.filterType = filter.id
+                    binding.photo.filterType = filterType
+                    binding.photo.filter.adjust(filterType.defaultIntensity)
                     binding.photo.requestRender()
                 } else {
                     hideViews()
-                    openFilterIntensityDialog()
+                    openFilterIntensityDialog(filterType)
                 }
             }
             (adapter as FilterListAdapter).submitList(
                 listOf(
-                    UiFilter(FilterType.PIXELATION, Uri.EMPTY, getString(R.string.filter_pixelation)),
-                    UiFilter(FilterType.SATURATION, Uri.EMPTY, getString(R.string.filter_saturation)),
-                    UiFilter(FilterType.SOLARIZE, Uri.EMPTY, getString(R.string.filter_solarize)),
-                    UiFilter(FilterType.SWIRL, Uri.EMPTY, getString(R.string.filter_swirl)),
+                    UiFilter(FilterType.SATURATION, R.drawable.sunflower_saturation, R.string.filter_saturation),
+                    UiFilter(FilterType.SOLARIZE, R.drawable.sunflower_solarize, R.string.filter_solarize),
+                    UiFilter(FilterType.PIXELATION, R.drawable.sunflower_pixelation, R.string.filter_pixelation),
+                    UiFilter(FilterType.SWIRL, R.drawable.sunflower_swirl, R.string.filter_swirl),
                 )
             )
         }
@@ -209,14 +211,14 @@ class PhotoFragment : Fragment() {
             .start()
     }
 
-    private fun openFilterIntensityDialog() {
+    private fun openFilterIntensityDialog(filterType: FilterType) {
         parentFragmentManager.setFragmentResultListener(
             CLOSE_FILTER_INTENSITY_DIALOG_REQUEST_KEY,
             viewLifecycleOwner,
             closeFilterIntensityDialogResultListener
         )
 
-        val action = PhotoFragmentDirections.openFilterIntensityDialogAction(intensity)
+        val action = PhotoFragmentDirections.openFilterIntensityDialogAction(filterType.defaultIntensity)
         navController.navigate(action)
     }
 

@@ -76,6 +76,7 @@ class FilterIntensityBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.intensitySlider.progress = initialIntensity
+        binding.intensity.text = initialIntensity.toString()
     }
 
     override fun onResume() {

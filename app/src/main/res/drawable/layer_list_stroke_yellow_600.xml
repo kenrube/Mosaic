@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <color android:color="@color/black_020" />
+        <color android:color="@color/black_040" />
     </item>
     <item>
         <ripple android:color="@color/black" />
