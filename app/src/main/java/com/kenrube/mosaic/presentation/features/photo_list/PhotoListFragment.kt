@@ -121,15 +121,18 @@ class PhotoListFragment : Fragment() {
 
                 binding.progress.isVisible = it.loading
                 binding.photosAccessWarning.isVisible = it.showingPermissionWarning
-                binding.photoList.apply {
-                    isVisible = photosLoaded
-                    (adapter as PhotoListAdapter).submitList(getItemListForAdapter(it.photos))
-                }
 
-                // Hide dialog (if it's still shown) when we granted Storage permission via
-                // App Settings in separate window and returned back to the app
                 if (photosLoaded) {
+                    binding.photoList.apply {
+                        isVisible = true
+                        (adapter as PhotoListAdapter).submitList(getItemListForAdapter(it.photos))
+                    }
+
+                    // Hide dialog (if it's still shown) when we granted Storage permission via
+                    // App Settings in separate window and returned back to the app
                     navController.popBackStack(R.id.storagePermissionDialog, true)
+                } else {
+                    binding.photoList.isVisible = false
                 }
             }
         }
