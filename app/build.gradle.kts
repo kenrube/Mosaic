@@ -8,35 +8,34 @@ plugins {
 
 android {
     compileSdk = 30
-
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    sourceSets {
+        getByName("main").java.srcDir("src/main/kotlin")
+        getByName("test").java.srcDir("src/test/kotlin")
+        getByName("androidTest").java.srcDir("src/androidTest/kotlin")
+    }
     defaultConfig {
         applicationId = "com.kenrube.mosaic"
         minSdk = 21
         targetSdk = 29
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
     buildFeatures {
         viewBinding = true
-    }
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
     }
 }
 
