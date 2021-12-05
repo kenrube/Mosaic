@@ -2,6 +2,9 @@
 Simplified replica of the first two screens of [Prisma Android app](https://play.google.com/store/apps/details?id=com.neuralprisma).
 Without neural networks, just simple shader-based filters.
 
+## Preview
+![](files/preview.gif)
+
 ## Pre-requisites
 - [OpenGL ES 2.0](https://developer.android.com/guide/topics/graphics/opengl)-compatible device/emulator
 
