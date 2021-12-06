@@ -1,17 +1,16 @@
-precision highp float;
+varying highp vec2 textureCoordinate;
 
-varying vec2 textureCoordinate;
-uniform float imageWidthFactor;
-uniform float imageHeightFactor;
 uniform sampler2D inputImageTexture;
-uniform float pixel;
+uniform highp float imageWidthFactor;
+uniform highp float imageHeightFactor;
+uniform highp float pixel;
 
 void main()
 {
-    vec2 uv  = textureCoordinate.xy;
-    float dx = pixel * imageWidthFactor;
-    float dy = pixel * imageHeightFactor;
-    vec2 coord = vec2(dx * floor(uv.x / dx), dy * floor(uv.y / dy));
-    vec3 tc = texture2D(inputImageTexture, coord).xyz;
-    gl_FragColor = vec4(tc, 1.0);
+    highp vec2 xy  = textureCoordinate.xy;
+    highp float dx = pixel * imageWidthFactor;
+    highp float dy = pixel * imageHeightFactor;
+    highp vec2 textureCoordinateToUse = vec2(dx * floor(xy.x / dx), dy * floor(xy.y / dy));
+
+    gl_FragColor = texture2D(inputImageTexture, textureCoordinateToUse);
 }

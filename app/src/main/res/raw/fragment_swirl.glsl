@@ -5,6 +5,7 @@ uniform highp float angle;
 
 const highp vec2 center = vec2(0.5, 0.5);
 const highp float radius = 0.5;
+const highp float rotationFactor = 8.0;
 
 void main()
 {
@@ -14,10 +15,12 @@ void main()
     {
         textureCoordinateToUse -= center;
         highp float percent = (radius - dist) / radius;
-        highp float theta = percent * percent * angle * 8.0;
+        highp float theta = percent * percent * angle * rotationFactor;
         highp float s = sin(theta);
         highp float c = cos(theta);
-        textureCoordinateToUse = vec2(dot(textureCoordinateToUse, vec2(c, -s)), dot(textureCoordinateToUse, vec2(s, c)));
+        highp float xToUse = dot(textureCoordinateToUse, vec2(c, -s));
+        highp float yToUse = dot(textureCoordinateToUse, vec2(s, c));
+        textureCoordinateToUse = vec2(xToUse, yToUse);
         textureCoordinateToUse += center;
     }
 

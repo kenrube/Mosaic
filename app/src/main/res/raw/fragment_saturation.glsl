@@ -11,6 +11,7 @@ void main()
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
     lowp float luminance = dot(textureColor.rgb, luminanceWeighting);
     lowp vec3 greyScaleColor = vec3(luminance);
-   
-    gl_FragColor = vec4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.w);
+    lowp vec3 finalColor = mix(greyScaleColor, textureColor.rgb, saturation);
+
+    gl_FragColor = vec4(finalColor, textureColor.a);
 }
