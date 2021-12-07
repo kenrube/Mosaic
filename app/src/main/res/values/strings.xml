@@ -25,9 +25,9 @@
     <string name="photo_sharesheet_title">Share</string>
     <string name="photo_temp_not_saved_message">Can\'t share artwork</string>
 
-    <string name="filter_pixelation">Pixelation</string>
     <string name="filter_saturation">Saturation</string>
-    <string name="filter_solarize">Solarize</string>
+    <string name="filter_invert">Invert</string>
+    <string name="filter_pixelation">Pixelation</string>
     <string name="filter_swirl">Swirl</string>
 
     <!-- region Filter intensity dialog -->

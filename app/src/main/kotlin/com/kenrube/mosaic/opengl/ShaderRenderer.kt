@@ -75,7 +75,8 @@ class ShaderRenderer(private var filter: ShaderFilter) : GLSurfaceView.Renderer 
             var resizedBitmap: Bitmap? = null
             if (bitmap.width % 2 == 1) {
                 resizedBitmap = Bitmap.createBitmap(
-                    bitmap.width + 1, bitmap.height,
+                    bitmap.width + 1,
+                    bitmap.height,
                     Bitmap.Config.ARGB_8888
                 )
                 resizedBitmap.density = bitmap.density

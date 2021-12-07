@@ -20,7 +20,6 @@ fun loadProgram(vertexShaderSource: String, fragmentShaderSource: String): Int {
     GLES20.glAttachShader(program, vertexShader)
     GLES20.glAttachShader(program, fragmentShader)
     GLES20.glLinkProgram(program)
-    // todo delete shaders?
     return program
 }
 
