@@ -176,7 +176,7 @@ class PhotoFragment : Fragment() {
             (adapter as FilterListAdapter).submitList(
                 listOf(
                     UiFilter(FilterType.SATURATION, R.drawable.sunflower_saturation, R.string.filter_saturation),
-                    UiFilter(FilterType.SOLARIZE, R.drawable.sunflower_solarize, R.string.filter_solarize),
+                    UiFilter(FilterType.INVERT, R.drawable.sunflower_solarize, R.string.filter_invert),
                     UiFilter(FilterType.PIXELATION, R.drawable.sunflower_pixelation, R.string.filter_pixelation),
                     UiFilter(FilterType.SWIRL, R.drawable.sunflower_swirl, R.string.filter_swirl),
                 )

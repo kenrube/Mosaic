@@ -55,9 +55,9 @@ class ShaderView @JvmOverloads constructor(context: Context, attrs: AttributeSet
             val shader = shaderRepository.getShader(filterType)
             filter = when (filterType) {
                 FilterType.NONE -> ShaderFilter(shader.vertexShader, shader.fragmentShader)
-                FilterType.PIXELATION -> PixelationFilter(shader.vertexShader, shader.fragmentShader)
                 FilterType.SATURATION -> SaturationFilter(shader.vertexShader, shader.fragmentShader)
-                FilterType.SOLARIZE -> SolarizeFilter(shader.vertexShader, shader.fragmentShader)
+                FilterType.INVERT -> InvertFilter(shader.vertexShader, shader.fragmentShader)
+                FilterType.PIXELATION -> PixelationFilter(shader.vertexShader, shader.fragmentShader)
                 FilterType.SWIRL -> SwirlFilter(shader.vertexShader, shader.fragmentShader)
             }
         }

@@ -13,8 +13,8 @@ open class ShaderFilter(
 ) : Adjuster {
     var program = -1
     private var attribPosition = -1
-    private var uniformTexture = -1
     private var attribTextureCoordinate = -1
+    private var uniformTexture = -1
     private var isInitialized = false
 
     private val runOnDraw: LinkedList<Runnable> = LinkedList()
@@ -33,8 +33,8 @@ open class ShaderFilter(
     open fun onInit() {
         program = loadProgram(vertexShader, fragmentShader)
         attribPosition = GLES20.glGetAttribLocation(program, "position")
-        uniformTexture = GLES20.glGetUniformLocation(program, "inputImageTexture")
         attribTextureCoordinate = GLES20.glGetAttribLocation(program, "inputTextureCoordinate")
+        uniformTexture = GLES20.glGetUniformLocation(program, "inputImageTexture")
         isInitialized = true
     }
 
@@ -49,7 +49,14 @@ open class ShaderFilter(
             return
         }
         cubeBuffer.position(0)
-        GLES20.glVertexAttribPointer(attribPosition, 2, GLES20.GL_FLOAT, false, 0, cubeBuffer)
+        GLES20.glVertexAttribPointer(
+            attribPosition,
+            2,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            cubeBuffer
+        )
         GLES20.glEnableVertexAttribArray(attribPosition)
         textureBuffer.position(0)
         GLES20.glVertexAttribPointer(

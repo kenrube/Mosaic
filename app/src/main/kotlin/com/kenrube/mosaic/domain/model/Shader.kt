@@ -8,7 +8,7 @@ data class Shader(
 enum class FilterType(val defaultIntensity: Int) {
     NONE(-1),
     SATURATION(0 /* bw */),
-    SOLARIZE(100 /* negative */),
+    INVERT(100 /* negative */),
     PIXELATION(15),
     SWIRL(100)
 }

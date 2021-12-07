@@ -26,9 +26,9 @@ class ResourceShaderRepository @Inject constructor(
             context.getRawFile(R.raw.vertex_default),
             context.getRawFile(R.raw.fragment_saturation)
         )
-        shaderMap[FilterType.SOLARIZE] = Shader(
+        shaderMap[FilterType.INVERT] = Shader(
             context.getRawFile(R.raw.vertex_default),
-            context.getRawFile(R.raw.fragment_solarize)
+            context.getRawFile(R.raw.fragment_invert)
         )
         shaderMap[FilterType.SWIRL] = Shader(
             context.getRawFile(R.raw.vertex_default),
