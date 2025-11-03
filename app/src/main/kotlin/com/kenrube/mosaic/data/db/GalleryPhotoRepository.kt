@@ -95,7 +95,7 @@ class GalleryPhotoRepository @Inject constructor(
             imageUri = imageFile.toUri()
             stream = FileOutputStream(imageFile)
         }
-        stream.use {
+        stream?.use {
             if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)) {
                 throw IOException("Failed to save bitmap")
             }
